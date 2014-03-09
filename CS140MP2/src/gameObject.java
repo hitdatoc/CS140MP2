@@ -3,11 +3,6 @@ import java.awt.*;
 import java.util.*;
 
 public class gameObject {
-	
-	/*
-	 * Each line of textbox can hold 35 characters
-	 * Each textbox can hold 3 lines 
-	 */
 
 	boolean move;
 	
@@ -81,11 +76,41 @@ public class gameObject {
 	
 	public void setMessage(String message){
 		this.message = message;
+		
+		String tempo = "";
+		for(int j = 0; j < this.message.length(); j++){
+			tempo = tempo + this.message.charAt(j);
+			if((j != 0 && j % 38 == 0) || j == this.message.length() - 1){
+				this.fullMessage.add(tempo);
+				tempo = "";
+			}
+		}
+	}
+	
+	public void setMessage(int i, String message){
+		this.fullMessage.add(i,message);
 	}
 	
 	public String getMessage(){
 		return this.message;
 	}
+	
+	public String getMessage(int i){
+		if(i >= this.fullMessage.size()){
+			return "";
+		}
+		
+		return this.fullMessage.get(i);
+	}
+	
+	public boolean hasNext(int i){
+		if(i >= this.fullMessage.size()){
+			return false;
+		}
+		
+		return true; 
+	}
+	
 	
 	void setObject0(){
 		this.renderX = 209;

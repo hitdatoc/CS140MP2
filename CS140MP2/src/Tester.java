@@ -49,7 +49,8 @@ public class Tester extends BasicGame{
 	boolean zDown= false;
 	boolean xDown= false;
 	boolean cDown = false;
-	boolean canAttack = true;;
+	boolean canAttack = true;
+	boolean canMove = true;
 	
 	playerThread pThread;
 	
@@ -68,6 +69,7 @@ public class Tester extends BasicGame{
 	Sound attack3;
 	soundThread SFXThread;
 	
+	int nextNum;
 	Font font;
 	TrueTypeFont Tfont;
 	boolean drawMessage;
@@ -213,6 +215,7 @@ public class Tester extends BasicGame{
     	//-------------------------------------
     	//FONT
     	//-------------------------------------
+    	nextNum = 0;
     	Font font = new Font("Fixedsys Regular", Font.BOLD, 30);
     	Tfont = new TrueTypeFont(font, false); 
     	textbox = new Image("/Users/Hillary/GameDev/CS140MP2/src/images/textboxthing.png");
@@ -234,7 +237,7 @@ public class Tester extends BasicGame{
     		quit = closeRequested();
     	} 
     	
-    	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100){
+    	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100 && canMove){
     		if(!map.collide(player.getXPos(), player.getYPos(),1) && map.getMapVertical(1)){
     			mapRenderY = mapRenderY + 0.3f;
     			map.moveObjects(0, 0.3f);
@@ -247,7 +250,7 @@ public class Tester extends BasicGame{
     		walkLeft = false;
     		walkRight = false;
     		player.setFace(1);
-    	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175){
+    	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175 && canMove){
     		if(!map.collide(player.getXPos(), player.getYPos(),2) && map.getMapVertical(2)){
     			mapRenderY = mapRenderY - 0.3f;
     			map.moveObjects(0, -0.3f);
@@ -260,7 +263,7 @@ public class Tester extends BasicGame{
     		walkLeft = false;
     		walkRight = false;
     		player.setFace(2);
-    	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100){
+    	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100 && canMove){
     		if(!map.collide(player.getXPos(), player.getYPos(),3) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX + 0.3f;
     			map.moveObjects(0.3f, 0);
@@ -273,7 +276,7 @@ public class Tester extends BasicGame{
     		walkDown = false;
     		walkRight = false;
     		player.setFace(3);
-    	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150){
+    	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150 && canMove){
     		if(!map.collide(player.getXPos(), player.getYPos(),4) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX - 0.3f;
     			map.moveObjects(-0.3f, 0);
@@ -288,7 +291,7 @@ public class Tester extends BasicGame{
     		player.setFace(4);
     	}
     	
-    	if(input.isKeyDown(Input.KEY_UP) && !mapMove){
+    	if(input.isKeyDown(Input.KEY_UP) && !mapMove && canMove){
     		buttonPressed = "ARROW UP";
     		buttonIsPressed = true;
     		walkUp = true;
@@ -300,7 +303,7 @@ public class Tester extends BasicGame{
     			player.setYPos(player.getYPos() - 0.3f);
     		}
     		player.setFace(1);
-    	} else if (input.isKeyDown(Input.KEY_DOWN) && !mapMove){
+    	} else if (input.isKeyDown(Input.KEY_DOWN) && !mapMove && canMove){
     		buttonPressed = "ARROW DOWN";
     		buttonIsPressed = true;
     		walkDown = true;
@@ -312,7 +315,7 @@ public class Tester extends BasicGame{
     			player.setYPos(player.getYPos() + 0.3f);
     		}
     		player.setFace(2);
-    	} else if(input.isKeyDown(Input.KEY_LEFT) && !mapMove){
+    	} else if(input.isKeyDown(Input.KEY_LEFT) && !mapMove && canMove){
     		buttonPressed = "ARROW LEFT";
     		buttonIsPressed = true;
     		walkLeft = true;
@@ -324,7 +327,7 @@ public class Tester extends BasicGame{
     			player.setXPos(player.getXPos() - 0.3f);
     		}
     		player.setFace(3);
-    	} else if(input.isKeyDown(Input.KEY_RIGHT) && !mapMove){
+    	} else if(input.isKeyDown(Input.KEY_RIGHT) && !mapMove && canMove){
     		buttonPressed = "ARROW RIGHT";
     		buttonIsPressed = true;
     		walkRight = true;
@@ -352,8 +355,16 @@ public class Tester extends BasicGame{
     		if(map.collideObject(player.getXPos(), player.getYPos(), player.getFace()) != "" && !drawMessage){
     			drawMessage = true;
     			canAttack = false;
+    			canMove = false;
+    		} else if(drawMessage && map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).hasNext(nextNum+3)){
+    			drawMessage = true;
+    			canAttack = false;
+    			canMove = false;
+    			nextNum = nextNum+3;
     		} else if(drawMessage){
     			drawMessage = false;
+    			canMove = true;
+    			nextNum = 0;
     		}
     		
     		if(canAttack){
@@ -556,8 +567,18 @@ public class Tester extends BasicGame{
     	
     	if(drawMessage){
     		g.drawImage(textbox, 0, map.getMPY() + 500f);
-    		Tfont.drawString(23, map.getMPY() + 518f, map.collideObject(player.getXPos(), player.getYPos(), player.getFace()), Color.black);
-    		Tfont.drawString(20, map.getMPY() + 515f, map.collideObject(player.getXPos(), player.getYPos(), player.getFace()), Color.white);
+    		//LINE 1
+    		Tfont.drawString(23, map.getMPY() + 518f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum), Color.black);
+    		Tfont.drawString(20, map.getMPY() + 515f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum), Color.white);
+    		
+    		//LINE 2
+    		Tfont.drawString(23, map.getMPY() + 558f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+1), Color.black);
+    		Tfont.drawString(20, map.getMPY() + 555f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+1), Color.white);
+    		
+    		//LINE 3
+    		Tfont.drawString(23, map.getMPY() + 598f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+2), Color.black);
+    		Tfont.drawString(20, map.getMPY() + 595f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+2), Color.white);
+    		
     	}
     }
 
