@@ -118,9 +118,9 @@ public class Map {
 			setMap0();
 			setObject0();
 			
-			mapURLBG = "/Users/Hillary/GameDev/CS140MP2/src/images/rabforest1.png";
-			mapURLFG = "/Users/Hillary/GameDev/CS140MP2/src/images/rabiteforestFG.png";
-			mapMusic = "/Users/Hillary/GameDev/CS140MP2/src/music/2-08-powell.ogg";
+			mapURLBG = "images/rabforest1.png";
+			mapURLFG = "images/rabiteforestFG.png";
+			mapMusic = "music/2-08-powell.ogg";
 		} else if(this.map == 1){
 			mapRenderX = 0;
 			mapRenderY = 0;
@@ -130,9 +130,9 @@ public class Map {
 			gridHeight = 100;
 			initGrid(gridHeight,gridLength);
 			
-			mapURLBG = "/Users/Hillary/GameDev/CS140MP2/src/images/navarrefortress.png";
-			mapURLFG = "/Users/Hillary/GameDev/CS140MP2/src/images/rabiteforestFG.png";
-			mapMusic = "/Users/Hillary/GameDev/CS140MP2/src/music/2-08-powell.ogg";
+			mapURLBG = "images/navarrefortress.png";
+			mapURLFG = "images/rabiteforestFG.png";
+			mapMusic = "music/2-08-powell.ogg";
 		}
 		
 		

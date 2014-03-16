@@ -1,3 +1,7 @@
+import java.awt.*;
+
+import org.newdawn.slick.Graphics;
+
 public class Player {
 	float xPos;
 	float yPos;
@@ -87,6 +91,8 @@ public class Player {
 	public String attackSFX2;
 	public String attackSFX3;
 	
+	Rectangle rect;
+	
 	int currentHP;
 	int maxHP;
 	
@@ -102,6 +108,8 @@ public class Player {
 			this.combo[i] = 0;
 		}
 		
+		this.rect = new Rectangle((int)xPos, (int)yPos, 32, 64);
+		
 		set();
 	}
 	
@@ -110,94 +118,106 @@ public class Player {
 			//FEMALE
 		
 			//STILL
-			StillUp = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleF1.gif";
-			StillDown = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleF2.gif";
-			StillLeft = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleF3.gif";
-			StillRight = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleF4.png";
+			StillUp = "images/sampleF1.gif";
+			StillDown = "images/sampleF2.gif";
+			StillLeft = "images/sampleF3.gif";
+			StillRight = "images/sampleF4.png";
 			
 			//WALKING
-			MoveDown = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF2-1.png";
-			MoveDown2 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF2-2.png";
-			MoveDown3 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF2-3.png";
-			MoveDown4 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF2-4.png";
-			MoveDown5 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF2-5.png";
-			MoveDown6 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF2-6.png";
-			MoveUp = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF1-1.png";
-			MoveUp2 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF1-2.png";
-			MoveUp3 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF1-3.png";
-			MoveUp4 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF1-4.png";
-			MoveUp5 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF1-5.png";
-			MoveUp6 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF1-6.png";
-			MoveLeft = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF3-1.png";
-			MoveLeft2 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF3-2.png";
-			MoveLeft3 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF3-3.png";
-			MoveLeft4 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF3-4.png";
-			MoveLeft5 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF3-5.png";
-			MoveLeft6 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF3-6.png";
-			MoveRight = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF4-1.png";
-			MoveRight2 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF4-2.png";
-			MoveRight3 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF4-3.png";
-			MoveRight4 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF4-4.png";
-			MoveRight5 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF4-5.png";
-			MoveRight6 = "/Users/Hillary/GameDev/CS140MP2/src/images/sampleWalkF4-6.png";
+			MoveDown = "images/sampleWalkF2-1.png";
+			MoveDown2 = "images/sampleWalkF2-2.png";
+			MoveDown3 = "images/sampleWalkF2-3.png";
+			MoveDown4 = "images/sampleWalkF2-4.png";
+			MoveDown5 = "images/sampleWalkF2-5.png";
+			MoveDown6 = "images/sampleWalkF2-6.png";
+			MoveUp = "images/sampleWalkF1-1.png";
+			MoveUp2 = "images/sampleWalkF1-2.png";
+			MoveUp3 = "images/sampleWalkF1-3.png";
+			MoveUp4 = "images/sampleWalkF1-4.png";
+			MoveUp5 = "images/sampleWalkF1-5.png";
+			MoveUp6 = "images/sampleWalkF1-6.png";
+			MoveLeft = "images/sampleWalkF3-1.png";
+			MoveLeft2 = "images/sampleWalkF3-2.png";
+			MoveLeft3 = "images/sampleWalkF3-3.png";
+			MoveLeft4 = "images/sampleWalkF3-4.png";
+			MoveLeft5 = "images/sampleWalkF3-5.png";
+			MoveLeft6 = "images/sampleWalkF3-6.png";
+			MoveRight = "images/sampleWalkF4-1.png";
+			MoveRight2 = "images/sampleWalkF4-2.png";
+			MoveRight3 = "images/sampleWalkF4-3.png";
+			MoveRight4 = "images/sampleWalkF4-4.png";
+			MoveRight5 = "images/sampleWalkF4-5.png";
+			MoveRight6 = "images/sampleWalkF4-6.png";
 			
 			//ATTACKING
-			Attack1 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack1.png";
-			Attack1_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack1_2.png";
-			Attack1_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack1_3.png";
-			Attack1_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack1_4.png";
-			Attack12 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF12_1.png";
-			Attack12_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF12_2.png";
-			Attack12_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF12_3.png";
-			Attack12_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF12_4.png";
-			Attack13 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF13_1.png";
-			Attack13_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF13_2.png";
-			Attack13_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF13_3.png";
-			Attack13_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF13_4.png";
-			Attack2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack2.png";
-			Attack2_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack2_2.png";
-			Attack2_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack2_3.png";
-			Attack2_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack2_4.png";
-			Attack22 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF22_1.png";
-			Attack22_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF22_2.png";
-			Attack22_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF22_3.png";
-			Attack22_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF22_4.png";
-			Attack23 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF23_1.png";
-			Attack23_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF23_2.png";
-			Attack23_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF23_3.png";
-			Attack23_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF23_4.png";
-			Attack3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack3.png";
-			Attack3_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack3_2.png";
-			Attack3_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack3_3.png";
-			Attack3_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack3_4.png";
-			Attack32 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF32_1.png";
-			Attack32_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF32_2.png";
-			Attack32_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF32_3.png";
-			Attack32_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF32_4.png";
-			Attack33 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF33_1.png";
-			Attack33_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF33_2.png";
-			Attack33_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF33_3.png";
-			Attack33_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF33_4.png";
-			Attack4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack4.png";
-			Attack4_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack4_2.png";
-			Attack4_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack4_3.png";
-			Attack4_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attack4_4.png";
-			Attack42 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF42_1.png";
-			Attack42_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF42_2.png";
-			Attack42_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF42_3.png";
-			Attack42_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF42_4.png";
-			Attack43 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF43_1.png";
-			Attack43_2 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF43_2.png";
-			Attack43_3 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF43_3.png";
-			Attack43_4 = "/Users/Hillary/GameDev/CS140MP2/src/images/attackF43_4.png";
+			Attack1 = "images/attack1.png";
+			Attack1_2 = "images/attack1_2.png";
+			Attack1_3 = "images/attack1_3.png";
+			Attack1_4 = "images/attack1_4.png";
+			Attack12 = "images/attackF12_1.png";
+			Attack12_2 = "images/attackF12_2.png";
+			Attack12_3 = "images/attackF12_3.png";
+			Attack12_4 = "images/attackF12_4.png";
+			Attack13 = "images/attackF13_1.png";
+			Attack13_2 = "images/attackF13_2.png";
+			Attack13_3 = "images/attackF13_3.png";
+			Attack13_4 = "images/attackF13_4.png";
+			Attack2 = "images/attack2.png";
+			Attack2_2 = "images/attack2_2.png";
+			Attack2_3 = "images/attack2_3.png";
+			Attack2_4 = "images/attack2_4.png";
+			Attack22 = "images/attackF22_1.png";
+			Attack22_2 = "images/attackF22_2.png";
+			Attack22_3 = "images/attackF22_3.png";
+			Attack22_4 = "images/attackF22_4.png";
+			Attack23 = "images/attackF23_1.png";
+			Attack23_2 = "images/attackF23_2.png";
+			Attack23_3 = "images/attackF23_3.png";
+			Attack23_4 = "images/attackF23_4.png";
+			Attack3 = "images/attack3.png";
+			Attack3_2 = "images/attack3_2.png";
+			Attack3_3 = "images/attack3_3.png";
+			Attack3_4 = "images/attack3_4.png";
+			Attack32 = "images/attackF32_1.png";
+			Attack32_2 = "images/attackF32_2.png";
+			Attack32_3 = "images/attackF32_3.png";
+			Attack32_4 = "images/attackF32_4.png";
+			Attack33 = "images/attackF33_1.png";
+			Attack33_2 = "images/attackF33_2.png";
+			Attack33_3 = "images/attackF33_3.png";
+			Attack33_4 = "images/attackF33_4.png";
+			Attack4 = "images/attack4.png";
+			Attack4_2 = "images/attack4_2.png";
+			Attack4_3 = "images/attack4_3.png";
+			Attack4_4 = "images/attack4_4.png";
+			Attack42 = "images/attackF42_1.png";
+			Attack42_2 = "images/attackF42_2.png";
+			Attack42_3 = "images/attackF42_3.png";
+			Attack42_4 = "images/attackF42_4.png";
+			Attack43 = "images/attackF43_1.png";
+			Attack43_2 = "images/attackF43_2.png";
+			Attack43_3 = "images/attackF43_3.png";
+			Attack43_4 = "images/attackF43_4.png";
 						
 		} else {
 			//MALE
 		}
 		
-		attackSFX1 = "/Users/Hillary/GameDev/CS140MP2/src/music/atk-hit1.ogg";
-		attackSFX2 = "/Users/Hillary/GameDev/CS140MP2/src/music/atk-hit2.ogg";
-		attackSFX3 = "/Users/Hillary/GameDev/CS140MP2/src/music/atk-hit3-withslash.ogg";
+		attackSFX1 = "music/atk-hit1.ogg";
+		attackSFX2 = "music/atk-hit2.ogg";
+		attackSFX3 = "music/atk-hit3-withslash.ogg";
+	}
+	
+	public void setRectangle(){
+		rect.setRect(new Rectangle((int)this.xPos, (int)this.yPos, 32, 64));
+	}
+	
+	public Rectangle getRectangle(){
+		return this.rect;
+	}
+	
+	public void drawRectangle(Graphics g){
+		g.drawRect(this.xPos, this.yPos, 32, 64);
 	}
 	
 	public float getXPos(){
@@ -210,10 +230,12 @@ public class Player {
 	
 	public void setXPos(float xPos){
 		this.xPos = xPos;
+		setRectangle();
 	}
 	
 	public void setYPos(float yPos){
 		this.yPos = yPos;
+		setRectangle();
 	}
 	
 	public int getFace(){

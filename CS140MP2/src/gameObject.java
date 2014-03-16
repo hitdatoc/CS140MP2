@@ -69,7 +69,7 @@ public class gameObject {
 	
 	public void setImage(){
 		if(this.object == 0){
-			this.objectImage = "/Users/Hillary/GameDev/CS140MP2/src/images/sign.png";
+			this.objectImage = "images/sign.png";
 			setObject0();
 		}
 	}

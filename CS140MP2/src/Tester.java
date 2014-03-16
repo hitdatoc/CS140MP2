@@ -1,4 +1,5 @@
 import java.awt.Font;
+import java.util.*;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.BasicGame;
@@ -74,6 +75,9 @@ public class Tester extends BasicGame{
 	TrueTypeFont Tfont;
 	boolean drawMessage;
 	Image textbox;
+	
+	ArrayList<Enemy> enemyList;
+	Enemy rabite;
 	
 	public static void main(String[] args) {
         try {
@@ -181,7 +185,13 @@ public class Tester extends BasicGame{
     	pThread = new playerThread();
     	pThread.start();
     	//-------------------------------------
+    	//ENEMIES
     	
+    	//-------------------------------------
+    	enemyList = new ArrayList<Enemy>();
+    	rabite = new Enemy();
+    	enemyList.add(rabite);
+    	//-------------------------------------
     	//MAP
     	//-------------------------------------
     	map = new Map();
@@ -218,7 +228,9 @@ public class Tester extends BasicGame{
     	nextNum = 0;
     	Font font = new Font("Fixedsys Regular", Font.BOLD, 30);
     	Tfont = new TrueTypeFont(font, false); 
-    	textbox = new Image("/Users/Hillary/GameDev/CS140MP2/src/images/textboxthing.png");
+    	textbox = new Image("images/textboxthing.png");
+    	
+    	
     }
 
     @Override
@@ -237,11 +249,16 @@ public class Tester extends BasicGame{
     		quit = closeRequested();
     	} 
     	
+    	//MAP MOVEMENT
     	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100 && canMove){
     		if(!map.collide(player.getXPos(), player.getYPos(),1) && map.getMapVertical(1)){
     			mapRenderY = mapRenderY + 0.3f;
     			map.moveObjects(0, 0.3f);
     			mapMove = true;
+    			
+    			for(int i = 0; i < enemyList.size(); i++){
+        			enemyList.get(i).setYPos(enemyList.get(i).getYPos() + 0.3f);
+        		}
         	}
     		map.setMPY(mapRenderY);
     		buttonIsPressed = true;
@@ -250,11 +267,17 @@ public class Tester extends BasicGame{
     		walkLeft = false;
     		walkRight = false;
     		player.setFace(1);
+    		
+    		
     	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175 && canMove){
     		if(!map.collide(player.getXPos(), player.getYPos(),2) && map.getMapVertical(2)){
     			mapRenderY = mapRenderY - 0.3f;
     			map.moveObjects(0, -0.3f);
     			mapMove = true;
+    			
+    			for(int i = 0; i < enemyList.size(); i++){
+        			enemyList.get(i).setYPos(enemyList.get(i).getYPos() - 0.3f);
+        		}
     		}
     		map.setMPY(mapRenderY);
     		buttonIsPressed = true;
@@ -263,11 +286,17 @@ public class Tester extends BasicGame{
     		walkLeft = false;
     		walkRight = false;
     		player.setFace(2);
+    		
+    		
     	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100 && canMove){
     		if(!map.collide(player.getXPos(), player.getYPos(),3) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX + 0.3f;
     			map.moveObjects(0.3f, 0);
     			mapMove = true;
+    			
+    			for(int i = 0; i < enemyList.size(); i++){
+        			enemyList.get(i).setXPos(enemyList.get(i).getXPos() + 0.3f);
+        		}
     		}
     		map.setMPX(mapRenderX);
     		buttonIsPressed = true;
@@ -276,11 +305,17 @@ public class Tester extends BasicGame{
     		walkDown = false;
     		walkRight = false;
     		player.setFace(3);
+    		
+    		
     	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150 && canMove){
     		if(!map.collide(player.getXPos(), player.getYPos(),4) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX - 0.3f;
     			map.moveObjects(-0.3f, 0);
     			mapMove = true;
+    			
+    			for(int i = 0; i < enemyList.size(); i++){
+        			enemyList.get(i).setXPos(enemyList.get(i).getXPos() - 0.3f);
+        		}
     		}
     		map.setMPX(mapRenderX);
     		buttonIsPressed = true;
@@ -289,8 +324,11 @@ public class Tester extends BasicGame{
     		walkLeft = false;
     		walkDown = false;
     		player.setFace(4);
+    		
+    		
     	}
     	
+    	//PLAYER MOVEMENT
     	if(input.isKeyDown(Input.KEY_UP) && !mapMove && canMove){
     		buttonPressed = "ARROW UP";
     		buttonIsPressed = true;
@@ -340,7 +378,7 @@ public class Tester extends BasicGame{
     		}
     		player.setFace(4);
     	} else if(!mapMove){
-    		buttonPressed = "ARROW BUTTONS NOT PRESSED/ CANNOT MOVE";
+    		buttonPressed = "ARROW BUTTONS NOT PRESSED / CANNOT MOVE";
     		buttonIsPressed = false;
     	}
     	
@@ -501,6 +539,11 @@ public class Tester extends BasicGame{
     	g.drawString(Float.toString(map.getMPY()), 100, 430);
     	
     	g.drawString(buttonPressed, 10, 25);
+    	
+    	rabite.AIMove(player.getXPos(), player.getYPos());
+    	rabite.drawEnemy(g, false, false);
+    	
+    	player.drawRectangle(g);
     	
     	if(zDown && walkDown && player.getCombo(2) == 0){
     		girlAttack1.draw(player.getXPos()-10, player.getYPos()-10);
