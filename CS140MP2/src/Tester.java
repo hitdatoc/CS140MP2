@@ -1,4 +1,5 @@
-import java.awt.Font;
+//VERSION BLEHBLEH
+import java.awt.*;
 import java.util.*;
 
 import org.newdawn.slick.Animation;
@@ -15,11 +16,15 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.AppGameContainer;
 
 public class Tester extends BasicGame{
+	Image mainMenuBG;
+	Image castleBenj;
+	
 	Player player;
 	Image girlStillUp;
 	Image girlStillDown;
 	Image girlStillLeft;
 	Image girlStillRight;
+	Image icon;
 	Animation girlMoveDown;
 	Animation girlMoveUp;
 	Animation girlMoveLeft;
@@ -36,6 +41,13 @@ public class Tester extends BasicGame{
 	Animation girlAttack4;
 	Animation girlAttack42;
 	Animation girlAttack43;
+	Animation casting;
+	Animation endCast;
+	Animation deadPlayer;
+	
+	//Animation heal;
+	
+	Animation fadeOut;
 	
 	Image mapBG;
 	Image mapFG;
@@ -46,16 +58,19 @@ public class Tester extends BasicGame{
 	boolean walkDown = false;
 	boolean walkLeft = false;
 	boolean walkRight = false;
-	boolean quit= false;
-	boolean zDown= false;
-	boolean xDown= false;
+	boolean quit = false;
+	boolean zDown = false;
+	boolean xDown = false;
 	boolean cDown = false;
 	boolean canAttack = true;
 	boolean canMove = true;
 	
 	playerThread pThread;
+	enemyThread eThread;
 	
 	Map map;
+	
+	Spells spell;
 	
 	float mapRenderX = 0;
 	float mapRenderY = 0;
@@ -65,19 +80,33 @@ public class Tester extends BasicGame{
 	int screenSizeY = 480;
 	
 	Music music;
+	Music deadMusic;
 	Sound attack1;
 	Sound attack2;
 	Sound attack3;
 	soundThread SFXThread;
 	
+	Inventory in;
+	boolean inventoryOpen; 
+	boolean mainOpen;
+	
 	int nextNum;
 	Font font;
 	TrueTypeFont Tfont;
+	TrueTypeFont Tfont2;
+	TrueTypeFont Sfont;
 	boolean drawMessage;
 	Image textbox;
 	
 	ArrayList<Enemy> enemyList;
+	ArrayList<Enemy> enemyAList;
+	ArrayList<Randomizer> randies;
+	Randomizer randy;
+	Randomizer randy2;
+	Randomizer randy3;
 	Enemy rabite;
+	Enemy rabite2;
+	Enemy rabite3;
 	
 	public static void main(String[] args) {
         try {
@@ -95,12 +124,23 @@ public class Tester extends BasicGame{
     
     @Override
     public void init(GameContainer container) throws SlickException {
+    	//-------------------------------------
+    	//MAIN MENU
+    	//-------------------------------------
+    	mainOpen = true;
+    	inventoryOpen = false;
     	
+    	mainMenuBG = new Image("/Users/Hillary/GameDev/CS140MP2/src/images/mainmenuBG.png");
+    	castleBenj = new Image("/Users/Hillary/GameDev/CS140MP2/src/images/castlebenjful.png");
     	//-------------------------------------
     	//PLAYER
     	player = new Player();
     	walkDown = true;
+    	//-------------------------------------
     	//IMAGES
+    	//-------------------------------------
+    	//ICON
+    	icon = new Image("images/iconGirl.png");
     	//-------------------------------------
     	//STILL
     	//-------------------------------------
@@ -125,7 +165,6 @@ public class Tester extends BasicGame{
     	Image [] girlWalkRight = {new Image(player.MoveRight), new Image(player.MoveRight2), new Image(player.MoveRight3), new Image(player.MoveRight4), new Image(player.MoveRight5), new Image(player.MoveRight6)};
     	girlMoveRight = new Animation(girlWalkRight, duration, true);
     	//-------------------------------------
-    	
     	//ATTACKING
     	//-------------------------------------  	
     	int [] duration2 = {100,80,80,160};
@@ -184,13 +223,58 @@ public class Tester extends BasicGame{
     	//-------------------------------------
     	pThread = new playerThread();
     	pThread.start();
+    	player.setThread(pThread);
+    	//-------------------------------------
+    	//DYING ANIMATIONS
+    	//-------------------------------------
+    	int[] duration3 = {300, 300, 300, 300, 300, 300, 300, 300, 300, 300};
+    	Image [] fading = {new Image("images/fade1.png"), new Image("images/fade2.png"),new Image("images/fade3.png"),new Image("images/fade4.png"),new Image("images/fade5.png"),new Image("images/fade6.png"),new Image("images/fade7.png"),new Image("images/fade8.png"),new Image("images/fade9.png"),new Image("images/fade10.png")};
+    	fadeOut = new Animation(fading, duration3, true);
+    	fadeOut.stopAt(9);
+    	
+    	int[] duration4 = {500, 500, 500, 500};
+    	Image [] deadP = {new Image("images/dead21.png"), new Image("images/dead22.png"), new Image("images/dead23.png") , new Image("images/dead24.png")};
+    	deadPlayer = new Animation(deadP, duration4, true);
+    	deadPlayer.stopAt(3);
+    	//-------------------------------------
+    	//CASTING ANIMATIONS
+    	//-------------------------------------
+    	int [] duration5 = {100, 100, 100};
+    	Image [] cast = {new Image("/Users/Hillary/GameDev/CS140MP2/src/images/casting1.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/casting2.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/casting3.png")};
+    	casting = new Animation(cast, duration5, true);
+    	
+    	Image[] fcast = {new Image("/Users/Hillary/GameDev/CS140MP2/src/images/casting3.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/casting4.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/casting5.png")};
+    	endCast = new Animation(fcast, duration5, true);
+    	endCast.stopAt(2);
     	//-------------------------------------
     	//ENEMIES
-    	
     	//-------------------------------------
     	enemyList = new ArrayList<Enemy>();
+    	enemyAList = new ArrayList<Enemy>();
     	rabite = new Enemy();
+    	rabite2 = new Enemy(500, 200);
+    	rabite3 = new Enemy(200, 100);
+    	rabite2.setEnemy(1);
+    	rabite3.setAggression(2);
     	enemyList.add(rabite);
+    	enemyList.add(rabite2);
+    	enemyList.add(rabite3);
+    	
+    	eThread = new enemyThread();
+    	eThread.start();
+    	
+    	randies = new ArrayList<Randomizer>();
+    	randy = new Randomizer();
+    	randy2 = new Randomizer();
+    	randy3 = new Randomizer();
+    	randy.start();
+    	randies.add(randy);
+    	randies.add(randy2);
+    	randies.add(randy3);
+    	//-------------------------------------
+    	//SPELLS
+    	//-------------------------------------
+    	spell = new Spells();
     	//-------------------------------------
     	//MAP
     	//-------------------------------------
@@ -206,8 +290,9 @@ public class Tester extends BasicGame{
     	//MAP MUSIC
     	//-------------------------------------
     	music = new Music(map.mapMusic);
-    	music.loop();
-    	music.play();
+    	deadMusic = new Music("music/3-20-long-goodbye.ogg");
+    	/*music.loop();
+    	music.play();*/
     	//-------------------------------------
     	//SFX
     	//-------------------------------------
@@ -216,28 +301,39 @@ public class Tester extends BasicGame{
     	attack1 = new Sound(player.attackSFX1);
     	attack2 = new Sound(player.attackSFX2);
     	attack3 = new Sound(player.attackSFX3);
-    	
     	//-------------------------------------
     	//OBJECTS
     	//-------------------------------------
     	drawMessage = false;
-    	
+    	//-------------------------------------
+    	//INVENTORY
+    	//-------------------------------------
+    	in = new Inventory();
     	//-------------------------------------
     	//FONT
     	//-------------------------------------
     	nextNum = 0;
     	Font font = new Font("Fixedsys Regular", Font.BOLD, 30);
+    	Font font2 = new Font("Fixedsys Regular", Font.BOLD, 25);
+    	Font font3 = new Font("Fixedsys Regular", Font.BOLD, 40);
     	Tfont = new TrueTypeFont(font, false); 
+    	Tfont2 = new TrueTypeFont(font3, false); 
+    	Sfont = new TrueTypeFont(font2, false);
     	textbox = new Image("images/textboxthing.png");
-    	
+    	//-------------------------------------
     	
     }
 
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
     	//MUSIC
-    	if(!music.playing()){
+    	/*if(!music.playing() && player.isAlive){
     		music.play();
+    	}*/
+    	
+    	if(!player.isAlive && !deadMusic.playing()){
+    		music.stop();
+    		deadMusic.play();
     	}
     	
     	mapMove = false;
@@ -249,8 +345,72 @@ public class Tester extends BasicGame{
     		quit = closeRequested();
     	} 
     	
+    	//MAIN MENU
+    	if(input.isKeyPressed(Input.KEY_Q) && !mainOpen){
+    		mainOpen = true;
+    		System.out.println("Main Menu is Open");	
+    	}
+    	
+    	if(input.isKeyPressed(Input.KEY_W) && mainOpen){
+    		mainOpen = false;
+    	}
+    	
+    	//INVENTORY
+    	if(input.isKeyPressed(Input.KEY_I) && !inventoryOpen){
+    		inventoryOpen = true;
+    		System.out.println("Inventory is Open");
+    		in.selected = 0;
+    	}
+
+    	if(inventoryOpen){
+    		if(input.isKeyPressed(Input.KEY_O)){
+        		System.out.println("Inventory is Closed");
+        		inventoryOpen = false;
+        	}
+    		
+    		if(input.isKeyPressed(Input.KEY_Z)){
+    			if(!in.isSelected){
+    				in.isSelected = true;
+    			} else {
+    				if(in.arrow){
+						System.out.println("Yes");
+					}else{
+						System.out.println("No");
+					}
+    			}	
+    		}
+    		
+    		if(!in.isSelected){
+    			if(input.isKeyPressed(Input.KEY_RIGHT)){
+	    			if(in.selected+1<40){
+	    				in.selected++;
+	    			}
+	    		} else if(input.isKeyPressed(Input.KEY_LEFT)){
+	    			if(in.selected-1>=0){
+	    				in.selected--;
+	    			}
+	    		} else if(input.isKeyPressed(Input.KEY_UP)){
+	    			if(in.selected<40 && in.selected-10>=0){
+	    				in.selected-=10;
+	    			}
+	    		} else if(input.isKeyPressed(Input.KEY_DOWN)){
+	    			if(in.selected+10<40 && in.selected>=0){
+	    				in.selected+=10;
+	    			}
+	    		} 
+    		} else {
+    			if(input.isKeyPressed(Input.KEY_UP)){
+ 	    			in.arrow = true;
+ 	    		}else if(input.isKeyPressed(Input.KEY_DOWN)){
+ 	    			in.arrow = false;
+ 	    		} else if(input.isKeyPressed(Input.KEY_X)){
+ 	    			in.isSelected = false;
+ 	    		}
+    		}
+    	}
+    	
     	//MAP MOVEMENT
-    	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100 && canMove){
+    	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100 && canMove && !mainOpen){
     		if(!map.collide(player.getXPos(), player.getYPos(),1) && map.getMapVertical(1)){
     			mapRenderY = mapRenderY + 0.3f;
     			map.moveObjects(0, 0.3f);
@@ -269,7 +429,7 @@ public class Tester extends BasicGame{
     		player.setFace(1);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175 && canMove){
+    	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175 && canMove && !mainOpen){
     		if(!map.collide(player.getXPos(), player.getYPos(),2) && map.getMapVertical(2)){
     			mapRenderY = mapRenderY - 0.3f;
     			map.moveObjects(0, -0.3f);
@@ -288,7 +448,7 @@ public class Tester extends BasicGame{
     		player.setFace(2);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100 && canMove){
+    	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100 && canMove && !mainOpen){
     		if(!map.collide(player.getXPos(), player.getYPos(),3) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX + 0.3f;
     			map.moveObjects(0.3f, 0);
@@ -307,7 +467,7 @@ public class Tester extends BasicGame{
     		player.setFace(3);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150 && canMove){
+    	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150 && canMove && !mainOpen){
     		if(!map.collide(player.getXPos(), player.getYPos(),4) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX - 0.3f;
     			map.moveObjects(-0.3f, 0);
@@ -329,7 +489,7 @@ public class Tester extends BasicGame{
     	}
     	
     	//PLAYER MOVEMENT
-    	if(input.isKeyDown(Input.KEY_UP) && !mapMove && canMove){
+    	if(input.isKeyDown(Input.KEY_UP) && !mapMove && canMove && !mainOpen && !inventoryOpen){
     		buttonPressed = "ARROW UP";
     		buttonIsPressed = true;
     		walkUp = true;
@@ -341,7 +501,7 @@ public class Tester extends BasicGame{
     			player.setYPos(player.getYPos() - 0.3f);
     		}
     		player.setFace(1);
-    	} else if (input.isKeyDown(Input.KEY_DOWN) && !mapMove && canMove){
+    	} else if (input.isKeyDown(Input.KEY_DOWN) && !mapMove && canMove && !mainOpen && !inventoryOpen){
     		buttonPressed = "ARROW DOWN";
     		buttonIsPressed = true;
     		walkDown = true;
@@ -353,7 +513,7 @@ public class Tester extends BasicGame{
     			player.setYPos(player.getYPos() + 0.3f);
     		}
     		player.setFace(2);
-    	} else if(input.isKeyDown(Input.KEY_LEFT) && !mapMove && canMove){
+    	} else if(input.isKeyDown(Input.KEY_LEFT) && !mapMove && canMove && !mainOpen && !inventoryOpen){
     		buttonPressed = "ARROW LEFT";
     		buttonIsPressed = true;
     		walkLeft = true;
@@ -365,7 +525,7 @@ public class Tester extends BasicGame{
     			player.setXPos(player.getXPos() - 0.3f);
     		}
     		player.setFace(3);
-    	} else if(input.isKeyDown(Input.KEY_RIGHT) && !mapMove && canMove){
+    	} else if(input.isKeyDown(Input.KEY_RIGHT) && !mapMove && canMove && !mainOpen && !inventoryOpen){
     		buttonPressed = "ARROW RIGHT";
     		buttonIsPressed = true;
     		walkRight = true;
@@ -373,22 +533,22 @@ public class Tester extends BasicGame{
     		walkLeft = false;
     		walkUp = false;
     		
-    		if(!map.collide(player.getXPos(), player.getYPos(),4)){
+    		if(!map.collide(player.getXPos(), player.getYPos(),4) && !mainOpen){
     			player.setXPos(player.getXPos() + 0.3f);
     		}
     		player.setFace(4);
-    	} else if(!mapMove){
+    	} else if(!mapMove && !mainOpen){
     		buttonPressed = "ARROW BUTTONS NOT PRESSED / CANNOT MOVE";
     		buttonIsPressed = false;
     	}
     	
     	
     	//ZXC INTERACTIONS
-    	if(input.isKeyPressed(Input.KEY_Z)){
-    		
-    		if(!drawMessage && !canAttack){
-    			canAttack = true;
-    		}
+    	if(!drawMessage && !canAttack){
+			canAttack = true;
+		}
+    	
+    	if(input.isKeyPressed(Input.KEY_Z) && !mainOpen && !inventoryOpen && !xDown){
     		
     		if(map.collideObject(player.getXPos(), player.getYPos(), player.getFace()) != "" && !drawMessage){
     			drawMessage = true;
@@ -413,6 +573,13 @@ public class Tester extends BasicGame{
         		zDown = true; 
         		xDown = false;
         		cDown = false;
+        		
+        		//PLAYER ATTACKS ENEMY
+        		for(int i = 0; i < enemyList.size(); i++){
+        			if(player.hitbox(enemyList.get(i).rect)){
+        				enemyList.get(i).receiveDmg(player.attackDmg());
+        			}
+        		}
         		
         		if((pThread.getSleepTime(1) > 0 && walkUp) || (pThread.getSleepTime(2) > 0 && walkDown) || (pThread.getSleepTime(3) > 0 && walkLeft) || (pThread.getSleepTime(4) > 0 && walkRight)){
     				checker = true;
@@ -475,19 +642,22 @@ public class Tester extends BasicGame{
     		}
     		
     		
-    	} else if(input.isKeyPressed(Input.KEY_X)){
-    		buttonPressed = "X";
-    		buttonIsPressed = false;
-    		xDown = true;
-    		zDown = false;
-    		cDown = false;
-    	} else if(input.isKeyPressed(Input.KEY_C)){
-    		buttonPressed = "C";
-    		buttonIsPressed = false;
-    		cDown = true;
-    		zDown = false;
-    		xDown = false;
     	} 
+    	
+    	//HEALING
+    	if(xDown && input.isKeyPressed(Input.KEY_X)){
+    		xDown = false;
+    		canMove = true;
+    		canAttack = true;
+    	}
+    	
+    	if(!xDown && input.isKeyPressed(Input.KEY_X)){
+    		xDown = true;
+    		canMove = false;
+    		canAttack = false;
+    	}
+    	
+    	
     	
     	if(girlAttack1.isStopped() || girlAttack12.isStopped() || girlAttack13.isStopped() || girlAttack2.isStopped() || girlAttack22.isStopped() || girlAttack23.isStopped() || girlAttack3.isStopped() || girlAttack32.isStopped() || girlAttack33.isStopped() || girlAttack4.isStopped() || girlAttack42.isStopped() || girlAttack43.isStopped()){
     		zDown = false;
@@ -522,107 +692,301 @@ public class Tester extends BasicGame{
     		}
     	}
     	
+    	
+    	//------------------------------------------------
+    	//ENEMIES
+    	//------------------------------------------------
+    	if(!mainOpen && !inventoryOpen){
+        	int random = 0;
+        	enemyAList = new ArrayList<Enemy>();
+        	enemyAList = new ArrayList<Enemy>();
+        	for(int i = 0; i < enemyList.size(); i++){
+        		//------------------------------------------------
+        		//MOVE ENEMIES
+        		//------------------------------------------------
+        		if(enemyList.get(i).getCurrentHP() <= 0 && !enemyList.get(i).isDead && !eThread.isSleeping){
+        			eThread.setEnemy(enemyList.get(i));
+        		}
+        		
+        		if(enemyList.get(i).aggression == 1 && enemyList.get(i).getCurrentHP() > 0){
+        			//Move to Player (1)
+        			enemyList.get(i).AIMove(player.getXPos(), player.getYPos(), player.getRectangle(), map, enemyList);
+        			if(player.getARectangle().contains(enemyList.get(i).getRectangle()) && enemyList.get(i).getCurrentHP() > 0){
+        				enemyAList.add(enemyList.get(i));
+        			}
+        		} else if(enemyList.get(i).aggression == 2 && enemyList.get(i).getCurrentHP() > 0){
+        			//Random Movement (2)
+        			int randX = randies.get(random).x;
+        			int randY = randies.get(random).y;
+        			enemyList.get(i).AIMove(randX , randY, new Rectangle(randX, randY, 50, 50), map, enemyList);
+        			random++;
+        		}
+        	}
+        	
+        	//------------------------------------------------
+    		//ATTACK ENEMIES
+        	//------------------------------------------------
+        	boolean someoneAttacking = false;
+        	for(int j = 0; j < enemyAList.size(); j++){
+        		if(enemyAList.get(j).getAttacking()){
+        			someoneAttacking = true;
+        		}
+        	}
+        	
+        	if(!someoneAttacking && enemyAList.size() > 0){
+        		Random randomNum = new Random();
+        		int rNum = randomNum.nextInt(enemyAList.size());
+        		
+        		while(enemyAList.get(rNum).getCurrentHP() <= 0){
+        			rNum = randomNum.nextInt(enemyAList.size());
+        		}
+        		
+        		
+        		if(!eThread.isSleeping){
+        			enemyAList.get(rNum).setAttacking(true);
+        			eThread.setEnemy(enemyAList.get(rNum));
+        			if(enemyAList.get(rNum).hitbox(player.getRectangle())){
+            			player.receiveDmg(enemyAList.get(rNum).damage);
+            		}
+        		}
+        		
+        		
+        	}
+        	//------------------------------------------------
+    	}
+    	
     }
 
     @Override
     public void render(GameContainer container, Graphics g) throws SlickException {
-    	mapBG.draw(map.getMPX(), map.getMPY());
-    	
-    	map.drawObjects(g);
-    	
-    	g.drawString("PLAYER", 10, 385);
-    	g.drawString(Float.toString(player.getXPos()), 10, 400);
-    	g.drawString(Float.toString(player.getYPos()), 100, 400);
-    	
-    	g.drawString("MAP", 10, 415);
-    	g.drawString(Float.toString(map.getMPX()), 10, 430);
-    	g.drawString(Float.toString(map.getMPY()), 100, 430);
-    	
-    	g.drawString(buttonPressed, 10, 25);
-    	
-    	rabite.AIMove(player.getXPos(), player.getYPos());
-    	rabite.drawEnemy(g, false, false);
-    	
-    	player.drawRectangle(g);
-    	
-    	if(zDown && walkDown && player.getCombo(2) == 0){
-    		girlAttack1.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkDown && player.getCombo(2) == 1){
-    		girlAttack12.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkDown && player.getCombo(2) == 2){
-    		girlAttack13.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkLeft && player.getCombo(3) == 0){
-    		girlAttack2.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkLeft && player.getCombo(3) == 1){ 
-    		girlAttack22.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkLeft && player.getCombo(3) == 2){
-    		girlAttack23.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkRight && player.getCombo(4) == 0){
-    		girlAttack3.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkRight && player.getCombo(4) == 1){
-    		girlAttack32.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkRight && player.getCombo(4) == 2){
-    		girlAttack33.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkUp && player.getCombo(1) == 0){
-    		girlAttack4.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkUp && player.getCombo(1) == 1){
-    		girlAttack42.draw(player.getXPos()-10, player.getYPos()-10);
-    	}else if(zDown && walkUp && player.getCombo(1) == 2){
-    		girlAttack43.draw(player.getXPos()-10, player.getYPos()-10);
-    	}
-    	
-    	if(xDown && !zDown && !cDown){
-    		g.drawString("CAST TECH", 10, 40);
-    	}
-    	
-    	if(cDown && !zDown && !xDown){
-    		g.drawString("CAST SPELL", 10, 40);
-    	}
-    	
+    	//---------------------------------------------
+    	//QUIT
+    	//---------------------------------------------
     	if(quit){
     		container.exit();
     	}
-    	
-    	if(buttonIsPressed && walkUp && !zDown){
-    		g.drawString("WALKING UP", 10, 40);
-    		girlMoveUp.draw(player.getXPos(), player.getYPos());
-    	} else if(buttonIsPressed && walkDown && !zDown){
-    		girlMoveDown.draw(player.getXPos(), player.getYPos());
-    	} else if(buttonIsPressed && walkLeft && !zDown){
-    		girlMoveLeft.draw(player.getXPos(), player.getYPos());
-    	} else if(buttonIsPressed && walkRight && !zDown){
-    		girlMoveRight.draw(player.getXPos(), player.getYPos());
-    	} else if(!buttonIsPressed && !zDown && !xDown){
-    		if(walkUp){
-    			girlStillUp.draw(player.getXPos(),player.getYPos());
-    		} else if(walkDown){
-    			girlStillDown.draw(player.getXPos(), player.getYPos());
-    		} else if(walkLeft){
-    			girlStillLeft.draw(player.getXPos(), player.getYPos());
-    		} else if(walkRight){
-    			girlStillRight.draw(player.getXPos(), player.getYPos());
-    		} else {
-    			girlStillDown.draw(player.getXPos(), player.getYPos());
+    	//---------------------------------------------
+    	//DRAW MAIN MENU
+    	//---------------------------------------------
+    	if(mainOpen){
+    		g.drawImage(mainMenuBG, 0, 0);
+    		g.drawImage(castleBenj, 300, 0);
+    	}
+    	//---------------------------------------------
+    	//DRAW MAP
+    	//---------------------------------------------
+    	if(!mainOpen){
+    		mapBG.draw(map.getMPX(), map.getMPY());
+    	}
+    	//---------------------------------------------
+    	//DRAW INVENTORY
+    	//---------------------------------------------
+    	if(inventoryOpen && !mainOpen){
+    		in.drawObjects(g);
+    		g.drawString("INVENTORY", 250,30);
+    		g.drawImage(in.playerImage, 100,300);
+    		g.drawString("EQUIPMENT", 400, 250);
+    		in.drawCurrentItems(g);
+    		Tfont2.drawString(300, 400, "INGRID");
+    		if(in.isSelected){
+    			in.drawDialogue(g);
+    			g.drawString("Equip/Use?", 450 , 350);
+    			g.drawString("Yes", 480, 375);
+    			g.drawString("No", 480, 400);
+    			if(in.arrow){
+    				g.drawString(">", 470, 375);
+    			}else{
+    				g.drawString(">", 470, 400);
+    			}
     		}
     	}
     	
-    	mapFG.draw(map.getMPX(), map.getMPY());
-    	
-    	if(drawMessage){
-    		g.drawImage(textbox, 0, map.getMPY() + 500f);
-    		//LINE 1
-    		Tfont.drawString(23, map.getMPY() + 518f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum), Color.black);
-    		Tfont.drawString(20, map.getMPY() + 515f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum), Color.white);
-    		
-    		//LINE 2
-    		Tfont.drawString(23, map.getMPY() + 558f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+1), Color.black);
-    		Tfont.drawString(20, map.getMPY() + 555f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+1), Color.white);
-    		
-    		//LINE 3
-    		Tfont.drawString(23, map.getMPY() + 598f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+2), Color.black);
-    		Tfont.drawString(20, map.getMPY() + 595f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+2), Color.white);
-    		
+    	if(player.isAlive && !mainOpen && !inventoryOpen){
+
+        	map.drawObjects(g);
+        	
+        	player.drawARectangle(g);
+        	player.drawRectangle(g);
+        	g.drawString("PLAYER", 10, 385);
+        	g.drawString(Float.toString(player.getXPos()), 10, 400);
+        	g.drawString(Float.toString(player.getYPos()), 100, 400);
+        	
+        	g.drawString("MAP", 10, 415);
+        	g.drawString(Float.toString(map.getMPX()), 10, 430);
+        	g.drawString(Float.toString(map.getMPY()), 100, 430);
+        	
+        	g.drawString(buttonPressed, 10, 25);
+        	
+        	
+        	for(int i = 0; i < enemyList.size(); i++){
+            	if(!enemyList.get(i).isDead){
+            		enemyList.get(i).drawEnemy(g, false, enemyList.get(i).getAttacking());
+            		enemyList.get(i).drawRectangle(g);
+            	}
+            }
+        	
+        	
+        	
+        	if(zDown && walkDown && player.getCombo(2) == 0){
+        		girlAttack1.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos(), player.getYPos()+32, 64, 50);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkDown && player.getCombo(2) == 1){
+        		girlAttack12.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos()+16, player.getYPos(), 32, 80);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkDown && player.getCombo(2) == 2){
+        		girlAttack13.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos(), player.getYPos()+32, 32, 48);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkLeft && player.getCombo(3) == 0){
+        		girlAttack2.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos()-8, player.getYPos()+48, 32, 32);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkLeft && player.getCombo(3) == 1){ 
+        		girlAttack22.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos()-16, player.getYPos(), 32, 64);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkLeft && player.getCombo(3) == 2){
+        		girlAttack23.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos()-16, player.getYPos(), 32, 72);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkRight && player.getCombo(4) == 0){
+        		girlAttack3.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos()+32, player.getYPos()+48, 32, 32);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkRight && player.getCombo(4) == 1){
+        		girlAttack32.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos()+32, player.getYPos(), 32, 64);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkRight && player.getCombo(4) == 2){
+        		girlAttack33.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos()+32, player.getYPos(), 32, 72);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkUp && player.getCombo(1) == 0){
+        		girlAttack4.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos(), player.getYPos(), 64, 64);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkUp && player.getCombo(1) == 1){
+        		girlAttack42.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos()-16, player.getYPos()-16, 64, 32);
+        		g.setColor(Color.white);
+        	}else if(zDown && walkUp && player.getCombo(1) == 2){
+        		girlAttack43.draw(player.getXPos()-10, player.getYPos()-10);
+        		g.setColor(Color.red);
+        		g.drawRect(player.getXPos(), player.getYPos()-16, 32, 48);
+        		g.setColor(Color.white);
+        	}
+        	
+        	
+        	
+        	if(cDown && !zDown && !xDown){
+        		g.drawString("CAST SPELL", 10, 40);
+        	}
+        	
+        	if(buttonIsPressed && walkUp && !zDown){
+        		g.drawString("WALKING UP", 10, 40);
+        		girlMoveUp.draw(player.getXPos(), player.getYPos());
+        	} else if(buttonIsPressed && walkDown && !zDown){
+        		girlMoveDown.draw(player.getXPos(), player.getYPos());
+        	} else if(buttonIsPressed && walkLeft && !zDown){
+        		girlMoveLeft.draw(player.getXPos(), player.getYPos());
+        	} else if(buttonIsPressed && walkRight && !zDown){
+        		girlMoveRight.draw(player.getXPos(), player.getYPos());
+        	} else if(!buttonIsPressed && !zDown){
+        		if(walkUp){
+        			girlStillUp.draw(player.getXPos(),player.getYPos());
+        		} else if(walkDown){
+        			girlStillDown.draw(player.getXPos(), player.getYPos());
+        		} else if(walkLeft){
+        			girlStillLeft.draw(player.getXPos(), player.getYPos());
+        		} else if(walkRight){
+        			girlStillRight.draw(player.getXPos(), player.getYPos());
+        		} else {
+        			girlStillDown.draw(player.getXPos(), player.getYPos());
+        		}
+        	}
+        	
+        	
+        	if(xDown && !zDown && !cDown){
+        		g.drawString("CAST TECH", 10, 40);
+        		spell.animateSpell(0, g, player, enemyList);
+        	}
+        	
+        	mapFG.draw(map.getMPX(), map.getMPY());
+        	
+        	if(drawMessage){
+        		g.drawImage(textbox, 0, map.getMPY() + 500f);
+        		//LINE 1
+        		Tfont.drawString(23, map.getMPY() + 518f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum), Color.black);
+        		Tfont.drawString(20, map.getMPY() + 515f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum), Color.white);
+        		
+        		//LINE 2
+        		Tfont.drawString(23, map.getMPY() + 558f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+1), Color.black);
+        		Tfont.drawString(20, map.getMPY() + 555f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+1), Color.white);
+        		
+        		//LINE 3
+        		Tfont.drawString(23, map.getMPY() + 598f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+2), Color.black);
+        		Tfont.drawString(20, map.getMPY() + 595f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+2), Color.white);
+        		
+        	}
     	}
+    	//----------------------------------------------
+    	//DRAW STATUS
+		//----------------------------------------------
+    	if(!mainOpen && !inventoryOpen){
+    		
+        	Sfont.drawString(175, 13, "HP", Color.black);
+        	Sfont.drawString(175, 10, "HP", Color.white);
+        	
+        	Sfont.drawString(210, 13, Integer.toString(player.currentHP), Color.black);
+        	Sfont.drawString(210, 10, Integer.toString(player.currentHP), Color.white);
+        	
+        	Sfont.drawString(255, 13, "/", Color.black);
+        	Sfont.drawString(255, 10, "/", Color.white);
+        	
+        	Sfont.drawString(265, 13, Integer.toString(player.maxHP), Color.black);
+        	Sfont.drawString(265, 10, Integer.toString(player.maxHP), Color.white);
+        	
+        	Sfont.drawString(345, 13, Integer.toString(player.currentMana), Color.black);
+        	Sfont.drawString(345, 10, Integer.toString(player.currentMana), Color.white);
+        	
+        	Sfont.drawString(390, 13, "/", Color.black);
+        	Sfont.drawString(390, 10, "/", Color.white);
+        	
+        	Sfont.drawString(400, 13, Integer.toString(player.maxMana), Color.black);
+        	Sfont.drawString(400, 10, Integer.toString(player.maxMana), Color.white);
+        	
+        	Sfont.drawString(445, 13, "MP", Color.black);
+        	Sfont.drawString(445, 10, "MP", Color.white);
+        	
+        	g.drawImage(icon, 310, 10);
+        	
+        	Sfont.drawString(300, 43, "lvl" + Integer.toString(player.level), Color.black);
+        	Sfont.drawString(300, 40, "lvl" + Integer.toString(player.level), Color.white);
+    	}
+    	//----------------------------------------------
+    	// DRAW DEATH
+    	//----------------------------------------------
+    	if(!player.isAlive && !mainOpen){
+    		
+    		fadeOut.draw();
+    		deadPlayer.draw(player.getXPos(), player.getYPos());
+    		
+    		Tfont.drawString(400, 430, player.name + " died...");
+    	}
+    	//----------------------------------------------
     }
 
     

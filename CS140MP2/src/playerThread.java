@@ -2,8 +2,10 @@
 public class playerThread extends Thread{
 	
 	int[] sleeptime;
+	boolean isCasting;
 	
 	public playerThread(){
+		this.isCasting = false;
 		this.sleeptime = new int[5];
 		for(int i = 0; i < 5; i++){
 			sleeptime[i] = 0;
@@ -40,6 +42,10 @@ public class playerThread extends Thread{
 				sleeptime[4] = 0;
 			}
 			
+			if(isCasting){
+				this.toSleep(3000);
+				this.isCasting = false;
+			}
 		}
 	}
 	

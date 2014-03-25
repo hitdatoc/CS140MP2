@@ -1,8 +1,11 @@
 import java.awt.*;
+import java.util.*;
 
 import org.newdawn.slick.Graphics;
 
 public class Player {
+	String name;
+	
 	float xPos;
 	float yPos;
 	int face; //UP - 1, DOWN - 2, LEFT - 3, RIGHT - 4
@@ -92,16 +95,46 @@ public class Player {
 	public String attackSFX3;
 	
 	Rectangle rect;
+	Rectangle attackRect;
+	
+	int level;
+	
+	int str;
+	int agi;
+	int intl;
+	int initDmg;
 	
 	int currentHP;
 	int maxHP;
+	boolean isAlive;
+	
+	int currentMana;
+	int maxMana;
+	
+	playerThread pThread;
 	
 	public Player(){
+		this.name = "Angela";
+		
 		this.xPos = 100;
 		this.yPos = 50;
 		this.face = 2;
 		
 		this.gender = true;
+		
+		this.str = 10;
+		this.agi = 10;
+		this.intl = 10;
+		this.initDmg = 20;
+		
+		this.level = 1;
+		this.isAlive = true;
+		
+		this.maxHP = str*10;
+		this.maxMana = intl*10;
+		
+		this.currentHP = maxHP;
+		this.currentMana = maxMana;
 		
 		this.combo = new int[5];
 		for(int i = 0; i < 5; i++){
@@ -109,6 +142,7 @@ public class Player {
 		}
 		
 		this.rect = new Rectangle((int)xPos, (int)yPos, 32, 64);
+		this.attackRect = new Rectangle((int)(this.xPos - 55f), (int)(this.yPos - 35f), 150, 150);
 		
 		set();
 	}
@@ -208,6 +242,14 @@ public class Player {
 		attackSFX3 = "music/atk-hit3-withslash.ogg";
 	}
 	
+	public void setName(String name){
+		this.name = name;
+	}
+	
+	public String getName(){
+		return this.name;
+	}
+	
 	public void setRectangle(){
 		rect.setRect(new Rectangle((int)this.xPos, (int)this.yPos, 32, 64));
 	}
@@ -216,8 +258,21 @@ public class Player {
 		return this.rect;
 	}
 	
+	
 	public void drawRectangle(Graphics g){
 		g.drawRect(this.xPos, this.yPos, 32, 64);
+	}
+	
+	public void setARectangle(){
+		attackRect.setRect(new Rectangle((int)(this.xPos - 55f), (int)(this.yPos - 35f), 150, 150));
+	}
+	
+	public Rectangle getARectangle(){
+		return this.attackRect;
+	}
+	
+	public void drawARectangle(Graphics g){
+		g.drawRect((int)(this.xPos - 55f), (int)(this.yPos - 35f), 150, 150);
 	}
 	
 	public float getXPos(){
@@ -231,15 +286,25 @@ public class Player {
 	public void setXPos(float xPos){
 		this.xPos = xPos;
 		setRectangle();
+		setARectangle();
 	}
 	
 	public void setYPos(float yPos){
 		this.yPos = yPos;
 		setRectangle();
+		setARectangle();
 	}
 	
 	public int getFace(){
 		return this.face;
+	}
+	
+	public void setThread(playerThread pThread){
+		this.pThread = pThread;
+	}
+	
+	public playerThread getThread(){
+		return this.pThread;
 	}
 	
 	public void setFace(int face){
@@ -250,6 +315,68 @@ public class Player {
 				combo[i] = 0;
 			}
 		}
+	}
+	
+	public boolean hitbox(Rectangle enemyRect){
+		Rectangle rectum = new Rectangle(1,1,1,1);
+		if(this.face == 1){
+			if(this.combo[1] == 0){
+				rectum = new Rectangle((int)(this.xPos), (int)(this.yPos), 64, 64);
+			} else if(this.combo[1] == 1){
+				rectum = new Rectangle((int)(this.xPos-16), (int)(this.yPos-16), 64, 32);
+			} else if(this.combo[1] == 2){
+				rectum = new Rectangle((int)(this.xPos), (int)(this.yPos-16), 32, 48);
+			}
+		} else if(this.face == 2){
+			if(this.combo[2] == 0){
+				rectum = new Rectangle((int)(this.xPos), (int)(this.yPos+32), 64, 50);
+			} else if(this.combo[2] == 1){
+				rectum = new Rectangle((int)(this.xPos+16), (int)(this.yPos), 32, 80);
+			} else if(this.combo[2] == 2){
+				rectum = new Rectangle((int)(this.xPos), (int)(this.yPos+32), 32, 48);
+			}
+		} else if(this.face == 3){
+			if(this.combo[3] == 0){
+				rectum = new Rectangle((int)(this.xPos-8), (int)(this.yPos+48), 32, 32);
+			} else if(this.combo[3] == 1){
+				rectum = new Rectangle((int)(this.xPos-16), (int)(this.yPos), 32, 64);
+			} else if(this.combo[3] == 2){
+				rectum = new Rectangle((int)(this.xPos-16), (int)(this.yPos), 32, 72);
+			}
+		} else if(this.face == 4){
+			if(this.combo[4] == 0){
+				rectum = new Rectangle((int)(this.xPos+32), (int)(this.yPos+48), 32, 32);
+			} else if(this.combo[4] == 1){
+				rectum = new Rectangle((int)(this.xPos+32), (int)(this.yPos), 32, 64);
+			} else if(this.combo[4] == 2){
+				rectum = new Rectangle((int)(this.xPos+32), (int)(this.yPos), 32, 64);
+			}
+		}
+		
+		if(rectum.intersects(enemyRect)){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public int attackDmg(){
+		Random random = new Random();
+		float randomInt = (float)(random.nextInt(10+(agi*2)) + 1);
+		//System.out.println("PDAMAGE: " + this.initDmg + " PFINAL DAMAGE: " + (int)(this.initDmg + (this.initDmg*(randomInt/100))) + " PRANDOM: " + randomInt);
+		return (int)(this.initDmg + (this.initDmg*(randomInt/100)));
+	}
+	
+	public void receiveDmg(int damage){
+		Random random = new Random();
+		float randomInt = (float)(random.nextInt(10+str) + 1);
+		//System.out.println("DAMAGE: " + damage*(randomInt/100) + " FINAL DAMAGE: " + (int)(damage - (damage*(randomInt/100))) + " RANDOM: " + randomInt);
+		this.currentHP = currentHP - (int)(damage - damage*(randomInt/100));
+		if(this.currentHP <= 0){
+			this.currentHP = 0;
+			this.isAlive = false;
+		}
+		//System.out.println("NEW HP: " + currentHP);
 	}
 	
 	public void setCombo(int direction, int x){
@@ -263,4 +390,5 @@ public class Player {
 	public int getCombo(int direction){
 		return this.combo[direction];
 	}
+	
 }
