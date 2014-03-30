@@ -1,4 +1,4 @@
-//VERSION BLEHBLEH
+//VERSION BLEHBLEHBLEH
 import java.awt.*;
 import java.util.*;
 
@@ -98,6 +98,13 @@ public class Tester extends BasicGame{
 	boolean drawMessage;
 	Image textbox;
 	
+	float iconMenuX;
+	float iconMenuY;
+	boolean menuUpDown;
+	boolean menuWalk;
+	boolean miniMenu;
+	boolean quitMenu;
+	
 	ArrayList<Enemy> enemyList;
 	ArrayList<Enemy> enemyAList;
 	ArrayList<Randomizer> randies;
@@ -132,6 +139,13 @@ public class Tester extends BasicGame{
     	
     	mainMenuBG = new Image("/Users/Hillary/GameDev/CS140MP2/src/images/mainmenuBG.png");
     	castleBenj = new Image("/Users/Hillary/GameDev/CS140MP2/src/images/castlebenjful.png");
+    	
+    	iconMenuX = 240;
+    	iconMenuY = 240;
+    	menuUpDown = true; // TRUE - UP , FALSE - DOWN
+    	menuWalk = false;
+    	miniMenu = false;
+    	quitMenu = false;
     	//-------------------------------------
     	//PLAYER
     	player = new Player();
@@ -338,30 +352,88 @@ public class Tester extends BasicGame{
     	
     	mapMove = false;
     	
-    	//ARROW INPUTS
+    	//EXIT
     	Input input = container.getInput();
     	if(input.isKeyDown(Input.KEY_ESCAPE)){
     		buttonPressed = "ESCAPE";
     		quit = closeRequested();
     	} 
     	
+    	//--------------------------------------------------
     	//MAIN MENU
+    	//--------------------------------------------------
     	if(input.isKeyPressed(Input.KEY_Q) && !mainOpen){
-    		mainOpen = true;
-    		System.out.println("Main Menu is Open");	
+    		mainOpen = true;	
     	}
     	
-    	if(input.isKeyPressed(Input.KEY_W) && mainOpen){
-    		mainOpen = false;
+    	if(mainOpen){
+    		Rectangle icon = new Rectangle((int)(iconMenuX), (int)(iconMenuY), 32, 64);
+    		Rectangle up = new Rectangle(230, 100, 70, 80);
+    		Rectangle down = new Rectangle(230, 460, 70, 30);
+
+    		if(input.isKeyPressed(Input.KEY_W)){
+        		mainOpen = false;
+        	}
+    		
+    		if(input.isKeyDown(Input.KEY_UP) && !miniMenu){
+    			iconMenuY = iconMenuY - 0.3f;
+    			menuUpDown = true;
+    			menuWalk = true;
+    			icon = new Rectangle((int)(iconMenuX), (int)(iconMenuY), 32, 64);
+    		} else if(input.isKeyDown(Input.KEY_DOWN) && !miniMenu){
+    			if(!icon.intersects(down)){
+    				iconMenuY = iconMenuY + 0.3f;
+    			}
+    			menuUpDown = false;
+    			menuWalk = true;
+    			icon = new Rectangle((int)(iconMenuX), (int)(iconMenuY), 32, 64);
+    		} else {
+    			menuWalk = false;
+    		}
+    		
+    		//MINIMENU (QUIT)
+    		//-------------------------------------------
+    		if(icon.intersects(down)){;
+    			quitMenu = true;
+    		
+    			if(input.isKeyPressed(Input.KEY_Z)){
+    				quit = true;
+    			}
+    			
+    		} else {
+    			quitMenu = false;
+    		}
+    		
+    		//-------------------------------------------
+    		//MINIMENU (LOAD)
+    		//-------------------------------------------
+    		if(input.isKeyPressed(Input.KEY_Z)){
+    			miniMenu = true;
+    		}
+    		
+    		if(miniMenu && input.isKeyPressed(Input.KEY_X)){
+    			miniMenu = false;
+    		}
+    		
+    		if(miniMenu){
+    			
+    		}
+    		//-------------------------------------------
+    		
+    		if(up.contains(icon)){
+    			mainOpen = false;
+    		}
+    		
     	}
-    	
+    	//--------------------------------------------------
     	//INVENTORY
+    	//--------------------------------------------------
     	if(input.isKeyPressed(Input.KEY_I) && !inventoryOpen){
     		inventoryOpen = true;
     		System.out.println("Inventory is Open");
     		in.selected = 0;
     	}
-
+    	//--------------------------------------------------
     	if(inventoryOpen){
     		if(input.isKeyPressed(Input.KEY_O)){
         		System.out.println("Inventory is Closed");
@@ -371,8 +443,74 @@ public class Tester extends BasicGame{
     		if(input.isKeyPressed(Input.KEY_Z)){
     			if(!in.isSelected){
     				in.isSelected = true;
+    				in.arrow=true;
     			} else {
+    				in.isSelected=false;
     				if(in.arrow){
+    					if(in.selected<in.objectList.size()){
+    						if(in.objectList.get(in.selected).itemClass==1){
+    							if(((Equipable)in.objectList.get(in.selected)).type==0){
+			    					if(!((Equipable)in.objectList.get(in.selected)).equipped){
+			    						if(in.weaponEquipped>=0){
+			    							((Equipable)in.objectList.get(in.weaponEquipped)).equipped=false;
+			    						}
+			    						in.weaponEquipped=in.selected;
+										((Equipable)in.objectList.get(in.selected)).equipped=true;
+			    					}else{
+			    						in.weaponEquipped=-1;
+										((Equipable)in.objectList.get(in.selected)).equipped=false;
+			    					}
+    							}else if(((Equipable)in.objectList.get(in.selected)).type==1){
+    								if(!((Equipable)in.objectList.get(in.selected)).equipped){
+			    						if(in.headgearEquipped>=0){
+			    							((Equipable)in.objectList.get(in.headgearEquipped)).equipped=false;
+			    						}
+			    						in.headgearEquipped=in.selected;
+										((Equipable)in.objectList.get(in.selected)).equipped=true;
+			    					}else{
+			    						in.headgearEquipped=-1;
+										((Equipable)in.objectList.get(in.selected)).equipped=false;
+			    					}
+    							}else if(((Equipable)in.objectList.get(in.selected)).type==2){
+    								if(!((Equipable)in.objectList.get(in.selected)).equipped){
+			    						if(in.armorEquipped>=0){
+			    							((Equipable)in.objectList.get(in.armorEquipped)).equipped=false;
+			    						}
+			    						in.armorEquipped=in.selected;
+										((Equipable)in.objectList.get(in.selected)).equipped=true;
+			    					}else{
+			    						in.armorEquipped=-1;
+										((Equipable)in.objectList.get(in.selected)).equipped=false;
+			    					}
+    							}else{
+    								if(!((Equipable)in.objectList.get(in.selected)).equipped){
+			    						if(in.bootsEquipped>=0){
+			    							((Equipable)in.objectList.get(in.bootsEquipped)).equipped=false;
+			    						}
+			    						in.bootsEquipped=in.selected;
+										((Equipable)in.objectList.get(in.selected)).equipped=true;
+			    					}else{
+			    						in.bootsEquipped=-1;
+										((Equipable)in.objectList.get(in.selected)).equipped=false;
+			    					}
+    							}
+		    					
+    						}else{
+    							in.objectList.remove(in.selected);
+    							if(in.weaponEquipped>=0 && in.weaponEquipped>in.selected){
+    								in.weaponEquipped--;
+    							}
+    							if(in.headgearEquipped>=0 && in.headgearEquipped>in.selected){
+    								in.headgearEquipped--;
+    							}
+    							if(in.armorEquipped>=0 && in.armorEquipped>in.selected){
+    								in.armorEquipped--;
+    							}
+    							if(in.bootsEquipped>=0 && in.bootsEquipped>in.selected){
+    								in.bootsEquipped--;
+    							}
+    						}
+    					}
 						System.out.println("Yes");
 					}else{
 						System.out.println("No");
@@ -408,9 +546,10 @@ public class Tester extends BasicGame{
  	    		}
     		}
     	}
-    	
+    	//--------------------------------------------------
     	//MAP MOVEMENT
-    	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100 && canMove && !mainOpen){
+    	//--------------------------------------------------
+    	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100 && canMove && !mainOpen && !inventoryOpen){
     		if(!map.collide(player.getXPos(), player.getYPos(),1) && map.getMapVertical(1)){
     			mapRenderY = mapRenderY + 0.3f;
     			map.moveObjects(0, 0.3f);
@@ -429,7 +568,7 @@ public class Tester extends BasicGame{
     		player.setFace(1);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175 && canMove && !mainOpen){
+    	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175 && canMove && !mainOpen && !inventoryOpen){
     		if(!map.collide(player.getXPos(), player.getYPos(),2) && map.getMapVertical(2)){
     			mapRenderY = mapRenderY - 0.3f;
     			map.moveObjects(0, -0.3f);
@@ -448,7 +587,7 @@ public class Tester extends BasicGame{
     		player.setFace(2);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100 && canMove && !mainOpen){
+    	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100 && canMove && !mainOpen && !inventoryOpen){
     		if(!map.collide(player.getXPos(), player.getYPos(),3) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX + 0.3f;
     			map.moveObjects(0.3f, 0);
@@ -467,7 +606,7 @@ public class Tester extends BasicGame{
     		player.setFace(3);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150 && canMove && !mainOpen){
+    	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150 && canMove && !mainOpen && !inventoryOpen){
     		if(!map.collide(player.getXPos(), player.getYPos(),4) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX - 0.3f;
     			map.moveObjects(-0.3f, 0);
@@ -771,6 +910,28 @@ public class Tester extends BasicGame{
     	if(mainOpen){
     		g.drawImage(mainMenuBG, 0, 0);
     		g.drawImage(castleBenj, 300, 0);
+    		
+    		if(!this.menuWalk && this.menuUpDown){
+    			//FACE UP
+    			g.drawImage(girlStillUp, this.iconMenuX, this.iconMenuY);
+    		} else if(!this.menuWalk && !this.menuUpDown){
+    			//FACE DOWN
+    			g.drawImage(girlStillDown, this.iconMenuX, this.iconMenuY);
+    		}
+    		
+    		if(this.menuWalk && this.menuUpDown){
+    			girlMoveUp.draw(this.iconMenuX, this.iconMenuY);
+    		} else if(this.menuWalk && !this.menuUpDown){
+    			girlMoveDown.draw(this.iconMenuX, this.iconMenuY);
+    		}
+    		
+    		if(miniMenu){
+    			g.drawString("LOAD", this.iconMenuX, this.iconMenuY - 20);
+    		}
+    		
+    		if(quitMenu){
+    			g.drawString("Quit?", this.iconMenuX, this.iconMenuY - 20);
+    		}
     	}
     	//---------------------------------------------
     	//DRAW MAP
@@ -784,21 +945,51 @@ public class Tester extends BasicGame{
     	if(inventoryOpen && !mainOpen){
     		in.drawObjects(g);
     		g.drawString("INVENTORY", 250,30);
-    		g.drawImage(in.playerImage, 100,300);
     		g.drawString("EQUIPMENT", 400, 250);
     		in.drawCurrentItems(g);
-    		Tfont2.drawString(300, 400, "INGRID");
+    		Tfont2.drawString(300, 400, player.getName());
     		if(in.isSelected){
-    			in.drawDialogue(g);
-    			g.drawString("Equip/Use?", 450 , 350);
-    			g.drawString("Yes", 480, 375);
-    			g.drawString("No", 480, 400);
-    			if(in.arrow){
-    				g.drawString(">", 470, 375);
-    			}else{
-    				g.drawString(">", 470, 400);
+    			if(in.selected<in.objectList.size()){
+	    			in.drawDialogue(g);
+	    			
+	    			if(in.objectList.get(in.selected).itemClass==1){
+	    				if(!((Equipable)in.objectList.get(in.selected)).equipped){
+	    					g.drawString("Equip?", 450 , 350);
+	    				}else{
+	    					g.drawString("Unequip?", 450 , 350);
+	    				}
+	    			}else{
+    					g.drawString("Use?", 450 , 350);
+	    			}
+	    			g.drawString("Yes", 480, 375);
+	    			g.drawString("No", 480, 400);
+	    			if(in.arrow){
+	    				g.drawString(">", 470, 375);
+	    			}else{
+	    				g.drawString(">", 470, 400);
+	    			}
     			}
     		}
+    		if(in.selected<in.objectList.size()){
+    			g.drawString(in.objectList.get(in.selected).name, 50, 300);
+    			if(in.objectList.get(in.selected).itemClass==0){
+    				g.drawString("Usable", 50, 350);
+    				g.drawString("Effect: ", 50, 400);
+    			}else{
+    				g.drawString("Equipable", 50, 350);
+    				g.drawString("Item type:", 50, 400);
+    				if(((Equipable)in.objectList.get(in.selected)).type==0){
+    					g.drawString("Weapon", 155, 400);
+    				}else if(((Equipable)in.objectList.get(in.selected)).type==1){
+    					g.drawString("Headgear", 155, 400);
+    				}else if(((Equipable)in.objectList.get(in.selected)).type==2){
+    					g.drawString("Armor", 155, 400);
+    				}else{
+    					g.drawString("Boots", 155, 400);
+    				}
+    			}
+    		}
+    		
     	}
     	
     	if(player.isAlive && !mainOpen && !inventoryOpen){

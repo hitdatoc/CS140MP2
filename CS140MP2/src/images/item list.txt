@@ -1,0 +1,62 @@
+-----------------
+HEADGEAR
+-----------------
+STR HEADGEAR:
+Ruby Armet
+Circlet
+Amulet Helm
+INT HEADGEAR:
+Duck Helm
+Hair Ribbon
+Faerie Crown
+AGI HEADGEAR:
+Bandana
+Tiger Cap
+Needle Helm
+-----------------
+ARMOR
+-----------------
+INT ARMOR:
+Midge Robe
+Faerie Cloak
+Vampire Cape
+STR ARMOR:
+Ruby Vest
+Magical Armor
+Vestguard
+AGI ARMOR:
+Flower Suit
+Kung Fu Dress
+Tiger Bikini
+-----------------
+ACCESSORIES
+-----------------
+INT ACC:
+Faerie's Ring
+Amulet Ring
+Imp's Ring
+AGI ACC:
+Ninja Gloves
+Wolf's Band
+Dragon Ring
+STR ACC:
+Power Wrist
+Golem Ring
+Dragon Ring
+-----------------
+WEAPON
+-----------------
+STR WEAPON:
+Herald Sword
+Dragon Buster
+Excalibur
+
+AGI WEAPON:
+Moogle Claws
+Hyper-Fist
+Dragon Claws
+
+INT WEAPON:
+Fork of Hope
+Elf's Harpoon
+Valkyrian
