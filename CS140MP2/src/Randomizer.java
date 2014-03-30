@@ -21,7 +21,6 @@ public class Randomizer extends Thread {
 			}else{
 				x=ran.nextInt(640);
 				y=ran.nextInt(480);
-		//		System.out.println(x + " "+ y);
 				this.needSleep=true;
 			}
 		}

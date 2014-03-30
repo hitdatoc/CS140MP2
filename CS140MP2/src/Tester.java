@@ -104,6 +104,9 @@ public class Tester extends BasicGame{
 	boolean menuWalk;
 	boolean miniMenu;
 	boolean quitMenu;
+	boolean levelUp;
+	
+	int statUp;
 	
 	ArrayList<Enemy> enemyList;
 	ArrayList<Enemy> enemyAList;
@@ -146,9 +149,13 @@ public class Tester extends BasicGame{
     	menuWalk = false;
     	miniMenu = false;
     	quitMenu = false;
+    	levelUp = false;
+    	statUp = 1;
     	//-------------------------------------
     	//PLAYER
     	player = new Player();
+    	player.setXPos(240);
+    	player.setYPos(300);
     	walkDown = true;
     	//-------------------------------------
     	//IMAGES
@@ -265,10 +272,15 @@ public class Tester extends BasicGame{
     	//-------------------------------------
     	enemyList = new ArrayList<Enemy>();
     	enemyAList = new ArrayList<Enemy>();
-    	rabite = new Enemy();
-    	rabite2 = new Enemy(500, 200);
-    	rabite3 = new Enemy(200, 100);
-    	rabite2.setEnemy(1);
+    	rabite = new Enemy(player.level);
+    	rabite.setXPos(180);
+    	rabite.setYPos(150);
+    	rabite2 = new Enemy(player.level);
+    	rabite2.setXPos(300);
+    	rabite2.setYPos(150);
+    	rabite3 = new Enemy(player.level);
+    	rabite2.setXPos(400);
+    	rabite2.setYPos(150);
     	rabite3.setAggression(2);
     	enemyList.add(rabite);
     	enemyList.add(rabite2);
@@ -293,6 +305,7 @@ public class Tester extends BasicGame{
     	//MAP
     	//-------------------------------------
     	map = new Map();
+    	map.setThisMap(1);
     	mapBG = new Image(map.mapURLBG);
     	mapFG = new Image(map.mapURLFG);
     	mapRenderX = map.getMPX();
@@ -358,6 +371,44 @@ public class Tester extends BasicGame{
     		buttonPressed = "ESCAPE";
     		quit = closeRequested();
     	} 
+    	
+    	//LEVEL UP
+    	if(!mainOpen && !inventoryOpen && levelUp){
+    		
+    		if(input.isKeyPressed(Input.KEY_Z)){
+    			System.out.println("LEVEL UP Z");
+    			if(statUp == 1){
+    				player.str++;
+    				player.updateStats(false);
+    			} else if(statUp == 2){
+    				player.agi++;
+    				player.updateStats(true);
+    			} else if(statUp == 3){
+    				player.intl++;
+    				player.updateStats(false);
+    			}
+    			
+    			player.level++;
+    			levelUp = false;
+    			initEnemies();
+    		}
+    		
+    		if(input.isKeyPressed(Input.KEY_LEFT)){
+    			System.out.println("LEVEL UP LEFT");
+    			statUp--;
+    			if(statUp < 1){
+    				statUp = 1;
+    			}
+    		}
+    		
+    		if(input.isKeyPressed(Input.KEY_RIGHT)){
+    			System.out.println("LEVEL UP RIGHT");
+    			statUp++;
+    			if(statUp > 3){
+    				statUp = 3;
+    			}
+    		}
+    	}
     	
     	//--------------------------------------------------
     	//MAIN MENU
@@ -549,7 +600,7 @@ public class Tester extends BasicGame{
     	//--------------------------------------------------
     	//MAP MOVEMENT
     	//--------------------------------------------------
-    	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100 && canMove && !mainOpen && !inventoryOpen){
+    	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100 && canMove && !mainOpen && !inventoryOpen && !levelUp){
     		if(!map.collide(player.getXPos(), player.getYPos(),1) && map.getMapVertical(1)){
     			mapRenderY = mapRenderY + 0.3f;
     			map.moveObjects(0, 0.3f);
@@ -568,7 +619,7 @@ public class Tester extends BasicGame{
     		player.setFace(1);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175 && canMove && !mainOpen && !inventoryOpen){
+    	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175 && canMove && !mainOpen && !inventoryOpen && !levelUp){
     		if(!map.collide(player.getXPos(), player.getYPos(),2) && map.getMapVertical(2)){
     			mapRenderY = mapRenderY - 0.3f;
     			map.moveObjects(0, -0.3f);
@@ -587,7 +638,7 @@ public class Tester extends BasicGame{
     		player.setFace(2);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100 && canMove && !mainOpen && !inventoryOpen){
+    	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100 && canMove && !mainOpen && !inventoryOpen && !levelUp){
     		if(!map.collide(player.getXPos(), player.getYPos(),3) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX + 0.3f;
     			map.moveObjects(0.3f, 0);
@@ -606,7 +657,7 @@ public class Tester extends BasicGame{
     		player.setFace(3);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150 && canMove && !mainOpen && !inventoryOpen){
+    	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150 && canMove && !mainOpen && !inventoryOpen && !levelUp){
     		if(!map.collide(player.getXPos(), player.getYPos(),4) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX - 0.3f;
     			map.moveObjects(-0.3f, 0);
@@ -628,7 +679,7 @@ public class Tester extends BasicGame{
     	}
     	
     	//PLAYER MOVEMENT
-    	if(input.isKeyDown(Input.KEY_UP) && !mapMove && canMove && !mainOpen && !inventoryOpen){
+    	if(input.isKeyDown(Input.KEY_UP) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp){
     		buttonPressed = "ARROW UP";
     		buttonIsPressed = true;
     		walkUp = true;
@@ -640,7 +691,7 @@ public class Tester extends BasicGame{
     			player.setYPos(player.getYPos() - 0.3f);
     		}
     		player.setFace(1);
-    	} else if (input.isKeyDown(Input.KEY_DOWN) && !mapMove && canMove && !mainOpen && !inventoryOpen){
+    	} else if (input.isKeyDown(Input.KEY_DOWN) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp){
     		buttonPressed = "ARROW DOWN";
     		buttonIsPressed = true;
     		walkDown = true;
@@ -652,7 +703,7 @@ public class Tester extends BasicGame{
     			player.setYPos(player.getYPos() + 0.3f);
     		}
     		player.setFace(2);
-    	} else if(input.isKeyDown(Input.KEY_LEFT) && !mapMove && canMove && !mainOpen && !inventoryOpen){
+    	} else if(input.isKeyDown(Input.KEY_LEFT) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp){
     		buttonPressed = "ARROW LEFT";
     		buttonIsPressed = true;
     		walkLeft = true;
@@ -664,7 +715,7 @@ public class Tester extends BasicGame{
     			player.setXPos(player.getXPos() - 0.3f);
     		}
     		player.setFace(3);
-    	} else if(input.isKeyDown(Input.KEY_RIGHT) && !mapMove && canMove && !mainOpen && !inventoryOpen){
+    	} else if(input.isKeyDown(Input.KEY_RIGHT) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp){
     		buttonPressed = "ARROW RIGHT";
     		buttonIsPressed = true;
     		walkRight = true;
@@ -687,7 +738,7 @@ public class Tester extends BasicGame{
 			canAttack = true;
 		}
     	
-    	if(input.isKeyPressed(Input.KEY_Z) && !mainOpen && !inventoryOpen && !xDown){
+    	if(input.isKeyPressed(Input.KEY_Z) && !mainOpen && !inventoryOpen && !levelUp && !xDown){
     		
     		if(map.collideObject(player.getXPos(), player.getYPos(), player.getFace()) != "" && !drawMessage){
     			drawMessage = true;
@@ -784,16 +835,18 @@ public class Tester extends BasicGame{
     	} 
     	
     	//HEALING
-    	if(xDown && input.isKeyPressed(Input.KEY_X)){
-    		xDown = false;
-    		canMove = true;
-    		canAttack = true;
-    	}
-    	
-    	if(!xDown && input.isKeyPressed(Input.KEY_X)){
-    		xDown = true;
-    		canMove = false;
-    		canAttack = false;
+    	if(!mainOpen && !inventoryOpen && !levelUp){
+	    	if(xDown && input.isKeyPressed(Input.KEY_X)){
+	    		xDown = false;
+	    		canMove = true;
+	    		canAttack = true;
+	    	}
+	    	
+	    	if(!xDown && input.isKeyPressed(Input.KEY_X)){
+	    		xDown = true;
+	    		canMove = false;
+	    		canAttack = false;
+	    	}
     	}
     	
     	
@@ -892,7 +945,21 @@ public class Tester extends BasicGame{
         		
         	}
         	//------------------------------------------------
+    		//CHECK DEAD ENEMIES
+        	//------------------------------------------------
+        	boolean allDead = true;
+        	for(int k = 0; k < enemyList.size(); k++){
+        		if(!enemyList.get(k).isDead){
+        			allDead = false;
+        		}
+        	}
+        	
+        	if(allDead){
+        		levelUp = true;
+        	}
+        	//------------------------------------------------
     	}
+    	
     	
     }
 
@@ -1132,7 +1199,26 @@ public class Tester extends BasicGame{
         		Tfont.drawString(20, map.getMPY() + 595f, map.collideGameObject(player.getXPos(), player.getYPos(), player.getFace()).getMessage(nextNum+2), Color.white);
         		
         	}
+        	
+        	//----------------------------------------------
+        	//DRAW LEVEL UP
+    		//----------------------------------------------
+        	if(levelUp){
+        		if(statUp == 1){
+        			g.drawString(">", player.getXPos()-40, player.getYPos()-20);
+        		} else if(statUp == 2){
+        			g.drawString(">", player.getXPos()+10, player.getYPos()-20);
+        		} else if(statUp == 3){
+        			g.drawString(">", player.getXPos()+60, player.getYPos()-20);
+        		}
+        		
+        		g.drawString("STR", player.getXPos()-30, player.getYPos()-20);
+        		g.drawString("AGI", player.getXPos()+20, player.getYPos()-20);
+        		g.drawString("INT", player.getXPos()+70, player.getYPos()-20);
+        	}
     	}
+    	
+    	
     	//----------------------------------------------
     	//DRAW STATUS
 		//----------------------------------------------
@@ -1178,6 +1264,25 @@ public class Tester extends BasicGame{
     		Tfont.drawString(400, 430, player.name + " died...");
     	}
     	//----------------------------------------------
+    }
+    
+    public void initEnemies(){
+    	enemyList = new ArrayList<Enemy>();
+    	enemyAList = new ArrayList<Enemy>();
+    	rabite = new Enemy(player.level);
+    	rabite.setXPos(180);
+    	rabite.setYPos(150);
+    	rabite2 = new Enemy(player.level);
+    	rabite2.setXPos(300);
+    	rabite2.setYPos(150);
+    	rabite3 = new Enemy(player.level);
+    	rabite2.setXPos(400);
+    	rabite2.setYPos(150);
+    	rabite3.setAggression(2);
+    	enemyList.add(rabite);
+    	enemyList.add(rabite2);
+    	enemyList.add(rabite3);
+    	
     }
 
     

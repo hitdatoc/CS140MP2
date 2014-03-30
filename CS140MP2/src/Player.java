@@ -147,6 +147,22 @@ public class Player {
 		set();
 	}
 	
+	public void updateStats(boolean agi){
+		int addHP = str*10 - maxHP;
+		int addMP = intl*10 - maxMana;
+		
+		this.currentHP = currentHP + addHP;
+		this.currentMana = currentMana + addMP;
+		
+		this.maxHP = str*10;
+		this.maxMana = intl*10;
+		
+		this.initDmg = initDmg + 5;
+		if(agi){
+			initDmg = initDmg + 5;
+		}
+	}
+	
 	public void set(){
 		if(this.gender){
 			//FEMALE
@@ -316,6 +332,7 @@ public class Player {
 			}
 		}
 	}
+	
 	
 	public boolean hitbox(Rectangle enemyRect){
 		Rectangle rectum = new Rectangle(1,1,1,1);

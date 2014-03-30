@@ -78,6 +78,7 @@ public class Map {
 	
 	public void setThisMap(int map){
 		this.map = map;
+		setMap();
 	}
 	
 	public boolean getMapHorizontal(){
@@ -102,6 +103,8 @@ public class Map {
 	
 	public void setMap(){
 		if(this.map == 0){
+			objectList = new ArrayList<gameObject>();
+			
 			mapRenderX = 40;
 			mapRenderY = 0;
 			
@@ -122,16 +125,19 @@ public class Map {
 			mapURLFG = "images/rabiteforestFG.png";
 			mapMusic = "music/2-08-powell.ogg";
 		} else if(this.map == 1){
+			objectList = new ArrayList<gameObject>();
+			
 			mapRenderX = 0;
 			mapRenderY = 0;
 			
-			mapGrid = new int[100][100];
-			gridLength = 100;
-			gridHeight = 100;
+			mapGrid = new int[15][20];
+			gridLength = 20;
+			gridHeight = 15;
 			initGrid(gridHeight,gridLength);
+			setMap1();
 			
-			mapURLBG = "images/navarrefortress.png";
-			mapURLFG = "images/rabiteforestFG.png";
+			mapURLBG = "/Users/Hillary/GameDev/CS140MP2/src/images/darkCastleGrounds.png";
+			mapURLFG = "images/empty.png";
 			mapMusic = "music/2-08-powell.ogg";
 		}
 		
@@ -509,6 +515,130 @@ public class Map {
 		//----------------------------
 	}
 
+	void setMap1(){
+		//MANUAL BLOCKING
+		//----------------------------
+		//ROW 1
+		//----------------------------
+		for(int i = 0; i < 20; i++){
+			mapGrid[1][i] = 1;
+		}
+
+		//----------------------------
+		//ROW 2
+		//----------------------------
+		for(int i = 0; i < 20; i++){
+			mapGrid[2][i] = 1;
+		}
+		
+		//----------------------------
+		//ROW 3
+		//----------------------------
+		for(int i = 0; i < 20; i++){
+			mapGrid[3][i] = 1;
+		}
+		
+		//----------------------------
+		//ROW 4
+		//----------------------------
+		for(int i = 0; i < 20; i++){
+			mapGrid[4][i] = 1;
+		}
+		
+		//----------------------------
+		//ROW 5
+		//----------------------------
+		for(int i = 0; i < 5; i++){
+			mapGrid[5][i] = 1;
+		}
+		
+		for(int i = 14; i < 20; i++){
+			mapGrid[5][i] = 1;
+		}
+		//----------------------------
+		//ROW 6
+		//----------------------------
+		for(int i = 0; i < 5; i++){
+			mapGrid[6][i] = 1;
+		}
+		
+		for(int i = 14; i < 20; i++){
+			mapGrid[6][i] = 1;
+		}
+		//----------------------------
+		//ROW 7
+		//----------------------------
+		for(int i = 0; i < 5; i++){
+			mapGrid[7][i] = 1;
+		}
+		
+		for(int i = 14; i < 20; i++){
+			mapGrid[7][i] = 1;
+		}
+		//----------------------------
+		//ROW 8
+		//----------------------------
+		for(int i = 0; i < 5; i++){
+			mapGrid[8][i] = 1;
+		}
+		
+		for(int i = 14; i < 20; i++){
+			mapGrid[8][i] = 1;
+		}
+		//----------------------------
+		//ROW 9
+		//----------------------------
+		for(int i = 0; i < 4; i++){
+			mapGrid[9][i] = 1;
+		}
+		
+		for(int i = 15; i < 20; i++){
+			mapGrid[9][i] = 1;
+		}
+		//----------------------------
+		//ROW 10
+		//----------------------------
+		for(int i = 0; i < 2; i++){
+			mapGrid[10][i] = 1;
+		}
+		
+		for(int i = 18; i < 20; i++){
+			mapGrid[10][i] = 1;
+		}
+		//----------------------------
+		//ROW 11
+		//----------------------------
+		for(int i = 0; i < 3; i++){
+			mapGrid[11][i] = 1;
+		}
+		
+		for(int i = 16; i < 20; i++){
+			mapGrid[11][i] = 1;
+		}
+		//----------------------------
+		//ROW 12
+		//----------------------------
+		for(int i = 0; i < 8; i++){
+			mapGrid[12][i] = 1;
+		}
+		
+		for(int i = 11; i < 20; i++){
+			mapGrid[12][i] = 1;
+		}
+		//----------------------------
+		//ROW 13
+		//----------------------------
+		for(int i = 0; i < 20; i++){
+			mapGrid[13][i] = 1;
+		}
+		//----------------------------
+		//ROW 14
+		//----------------------------
+		for(int i = 0; i < 20; i++){
+			mapGrid[14][i] = 1;
+		}
+	}
+	
 	void setObject0(){
 		gameObject sign = new gameObject();
 		sign.setMessage("What the fuck did you just fucking say about me, you little bitch? I’ll have you know I graduated top of my class in the Navy Seals, and I’ve been involved in numerous secret raids on Al-Quaeda, and I have over 300 confirmed kills. I am trained in gorilla warfare and I’m the top sniper in the entire US armed forces. You are nothing to me but just another target. I will wipe you the fuck out with precision the likes of which has never been seen before on this Earth, mark my fucking words. You think you can get away with saying that shit to me over the Internet? Think again, fucker. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, maggot. The storm that wipes out the pathetic little thing you call your life. You’re fucking dead, kid. I can be anywhere, anytime, and I can kill you in over seven hundred ways, and that’s just with my bare hands. Not only am I extensively trained in unarmed combat, but I have access to the entire arsenal of the United States Marine Corps and I will use it to its full extent to wipe your miserable ass off the face of the continent, you little shit. If only you could have known what unholy retribution your little “clever” comment was about to bring down upon you, maybe you would have held your fucking tongue. But you couldn’t, you didn’t, and now you’re paying the price, you goddamn idiot. I will shit fury all over you and you will drown in it. You’re fucking dead, kiddo.");

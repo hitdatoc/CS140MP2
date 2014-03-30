@@ -26,7 +26,8 @@ public class Spells {
 				//HEAL SELF
 				heal(g, player.getXPos()-8, player.getYPos());
 				if(!player.getThread().isCasting){
-					player.currentHP++;
+					player.currentHP = player.currentHP + player.str/10;
+					player.currentMana = player.currentMana - player.intl/10;
 					if(player.currentHP > player.maxHP){
 						player.currentHP = player.maxHP;
 					}

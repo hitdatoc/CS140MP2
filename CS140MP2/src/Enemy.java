@@ -78,6 +78,30 @@ public class Enemy {
 		}catch(Exception e){}
 	}
 	
+	public Enemy(int level){
+		this.name = "";
+		this.enemy = 0;
+		
+		this.aggression = 1;
+		this.isAttacking = false;
+		this.isIdle = false;
+		this.isDead = false;
+		
+		this.maxHP = level*10;
+		this.currentHP = maxHP;
+		
+		this.damage = level*5;
+		
+		this.face = 2;
+		this.xPos = 200;
+		this.yPos = 200;
+		this.speed = 0.05f;
+		
+		try{
+			setEnemy0();
+		}catch(Exception e){}
+	}
+	
 	public Enemy(float xPos, float yPos){
 		this.name = "";
 		this.enemy = 0;
