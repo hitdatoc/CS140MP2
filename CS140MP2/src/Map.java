@@ -91,9 +91,9 @@ public class Map {
 	
 	public boolean getMapVertical(int direction){
 		if(mapVertical){
-			if(this.map == 0 && mapRenderY <= 0 && direction == 1){
+			if(mapRenderY <= 0 && direction == 1){
 				return true;
-			} else if(this.map == 0 && mapRenderY >= -185 && direction == 2){
+			} else if(mapRenderY >= (-1)*(mapHeight) && direction == 2){
 				return true;
 			}
 		}
@@ -130,15 +130,18 @@ public class Map {
 			mapRenderX = 0;
 			mapRenderY = 0;
 			
-			mapGrid = new int[15][20];
+			mapLength = 640;
+			mapHeight = 645;
+			
+			mapGrid = new int[20][20];
 			gridLength = 20;
-			gridHeight = 15;
+			gridHeight = 20;
 			initGrid(gridHeight,gridLength);
 			setMap1();
 			
 			mapURLBG = "/Users/Hillary/GameDev/CS140MP2/src/images/darkCastleGrounds.png";
 			mapURLFG = "images/empty.png";
-			mapMusic = "music/2-08-powell.ogg";
+			mapMusic = "/Users/Hillary/GameDev/CS140MP2/src/music/[Dubstep] - Varien - Lilith [Monstercat Release].ogg";
 		}
 		
 		
@@ -618,24 +621,74 @@ public class Map {
 		//----------------------------
 		//ROW 12
 		//----------------------------
-		for(int i = 0; i < 8; i++){
+		for(int i = 0; i < 3; i++){
 			mapGrid[12][i] = 1;
 		}
 		
-		for(int i = 11; i < 20; i++){
+		for(int i = 16; i < 20; i++){
 			mapGrid[12][i] = 1;
-		}
+		}	
 		//----------------------------
 		//ROW 13
 		//----------------------------
-		for(int i = 0; i < 20; i++){
+		for(int i = 0; i < 3; i++){
+			mapGrid[13][i] = 1;
+		}
+				
+		for(int i = 16; i < 20; i++){
 			mapGrid[13][i] = 1;
 		}
 		//----------------------------
 		//ROW 14
 		//----------------------------
-		for(int i = 0; i < 20; i++){
+		for(int i = 0; i < 3; i++){
 			mapGrid[14][i] = 1;
+		}
+				
+		for(int i = 16; i < 20; i++){
+			mapGrid[14][i] = 1;
+		}
+		//----------------------------
+		//ROW 15
+		//----------------------------
+		for(int i = 0; i < 3; i++){
+			mapGrid[15][i] = 1;
+		}
+						
+		for(int i = 16; i < 20; i++){
+			mapGrid[15][i] = 1;
+		}
+		//----------------------------
+		//ROW 16
+		//----------------------------
+		for(int i = 0; i < 3; i++){
+			mapGrid[16][i] = 1;
+		}
+						
+		for(int i = 16; i < 20; i++){
+			mapGrid[16][i] = 1;
+		}
+		//----------------------------
+		//ROW 17
+		//----------------------------
+		for(int i = 0; i < 8; i++){
+			mapGrid[17][i] = 1;
+		}
+		
+		for(int i = 11; i < 20; i++){
+			mapGrid[17][i] = 1;
+		}
+		//----------------------------
+		//ROW 18
+		//----------------------------
+		for(int i = 0; i < 20; i++){
+			mapGrid[18][i] = 1;
+		}
+		//----------------------------
+		//ROW 19
+		//----------------------------
+		for(int i = 0; i < 20; i++){
+			mapGrid[19][i] = 1;
 		}
 	}
 	

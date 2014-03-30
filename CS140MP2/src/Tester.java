@@ -105,18 +105,15 @@ public class Tester extends BasicGame{
 	boolean miniMenu;
 	boolean quitMenu;
 	boolean levelUp;
+	boolean spelling;
 	
 	int statUp;
 	
 	ArrayList<Enemy> enemyList;
 	ArrayList<Enemy> enemyAList;
 	ArrayList<Randomizer> randies;
-	Randomizer randy;
-	Randomizer randy2;
-	Randomizer randy3;
-	Enemy rabite;
-	Enemy rabite2;
-	Enemy rabite3;
+	
+	Animation fireSpell;
 	
 	public static void main(String[] args) {
         try {
@@ -129,7 +126,7 @@ public class Tester extends BasicGame{
     }
 	
     public Tester() {
-        super("Game Name");
+        super("Castle Benjful");
     }
     
     @Override
@@ -150,6 +147,7 @@ public class Tester extends BasicGame{
     	miniMenu = false;
     	quitMenu = false;
     	levelUp = false;
+    	spelling = false;
     	statUp = 1;
     	//-------------------------------------
     	//PLAYER
@@ -270,37 +268,16 @@ public class Tester extends BasicGame{
     	//-------------------------------------
     	//ENEMIES
     	//-------------------------------------
-    	enemyList = new ArrayList<Enemy>();
-    	enemyAList = new ArrayList<Enemy>();
-    	rabite = new Enemy(player.level);
-    	rabite.setXPos(180);
-    	rabite.setYPos(150);
-    	rabite2 = new Enemy(player.level);
-    	rabite2.setXPos(300);
-    	rabite2.setYPos(150);
-    	rabite3 = new Enemy(player.level);
-    	rabite2.setXPos(400);
-    	rabite2.setYPos(150);
-    	rabite3.setAggression(2);
-    	enemyList.add(rabite);
-    	enemyList.add(rabite2);
-    	enemyList.add(rabite3);
-    	
     	eThread = new enemyThread();
     	eThread.start();
-    	
-    	randies = new ArrayList<Randomizer>();
-    	randy = new Randomizer();
-    	randy2 = new Randomizer();
-    	randy3 = new Randomizer();
-    	randy.start();
-    	randies.add(randy);
-    	randies.add(randy2);
-    	randies.add(randy3);
+    	initEnemies();
     	//-------------------------------------
     	//SPELLS
     	//-------------------------------------
     	spell = new Spells();
+    	int[] durationFire = {150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150,150};
+		Image [] fire = {new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell1.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell2.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell3.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell4.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell5.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell6.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell7.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell8.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell9.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell10.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell11.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell12.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell13.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell14.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell15.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell16.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell17.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell18.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell19.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell5.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell4.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell3.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell2.png"), new Image("/Users/Hillary/GameDev/CS140MP2/src/images/spells/firespell1.png")};
+		fireSpell = new Animation(fire, durationFire, true);
     	//-------------------------------------
     	//MAP
     	//-------------------------------------
@@ -318,8 +295,6 @@ public class Tester extends BasicGame{
     	//-------------------------------------
     	music = new Music(map.mapMusic);
     	deadMusic = new Music("music/3-20-long-goodbye.ogg");
-    	/*music.loop();
-    	music.play();*/
     	//-------------------------------------
     	//SFX
     	//-------------------------------------
@@ -354,9 +329,9 @@ public class Tester extends BasicGame{
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
     	//MUSIC
-    	/*if(!music.playing() && player.isAlive){
+    	if(!music.playing() && player.isAlive){
     		music.play();
-    	}*/
+    	}
     	
     	if(!player.isAlive && !deadMusic.playing()){
     		music.stop();
@@ -376,7 +351,6 @@ public class Tester extends BasicGame{
     	if(!mainOpen && !inventoryOpen && levelUp){
     		
     		if(input.isKeyPressed(Input.KEY_Z)){
-    			System.out.println("LEVEL UP Z");
     			if(statUp == 1){
     				player.str++;
     				player.updateStats(false);
@@ -394,7 +368,6 @@ public class Tester extends BasicGame{
     		}
     		
     		if(input.isKeyPressed(Input.KEY_LEFT)){
-    			System.out.println("LEVEL UP LEFT");
     			statUp--;
     			if(statUp < 1){
     				statUp = 1;
@@ -402,7 +375,6 @@ public class Tester extends BasicGame{
     		}
     		
     		if(input.isKeyPressed(Input.KEY_RIGHT)){
-    			System.out.println("LEVEL UP RIGHT");
     			statUp++;
     			if(statUp > 3){
     				statUp = 3;
@@ -410,21 +382,33 @@ public class Tester extends BasicGame{
     		}
     	}
     	
+    	
+		
     	//--------------------------------------------------
     	//MAIN MENU
     	//--------------------------------------------------
-    	if(input.isKeyPressed(Input.KEY_Q) && !mainOpen){
-    		mainOpen = true;	
+    	if(!mainOpen && !player.isAlive){
+    		if(input.isKeyPressed(Input.KEY_Q)){
+    			mainOpen = true;
+    			
+    			iconMenuY = 240;
+    			
+    			player = new Player();
+    			player.isAlive = true;
+    			player.setXPos(240);
+    	    	player.setYPos(300);
+    	    	walkDown = true;
+    	    	
+    	    	deadMusic.stop();
+    	    	initEnemies();
+    		}
+    		
     	}
     	
     	if(mainOpen){
     		Rectangle icon = new Rectangle((int)(iconMenuX), (int)(iconMenuY), 32, 64);
     		Rectangle up = new Rectangle(230, 100, 70, 80);
     		Rectangle down = new Rectangle(230, 460, 70, 30);
-
-    		if(input.isKeyPressed(Input.KEY_W)){
-        		mainOpen = false;
-        	}
     		
     		if(input.isKeyDown(Input.KEY_UP) && !miniMenu){
     			iconMenuY = iconMenuY - 0.3f;
@@ -456,23 +440,10 @@ public class Tester extends BasicGame{
     		}
     		
     		//-------------------------------------------
-    		//MINIMENU (LOAD)
-    		//-------------------------------------------
-    		if(input.isKeyPressed(Input.KEY_Z)){
-    			miniMenu = true;
-    		}
-    		
-    		if(miniMenu && input.isKeyPressed(Input.KEY_X)){
-    			miniMenu = false;
-    		}
-    		
-    		if(miniMenu){
-    			
-    		}
-    		//-------------------------------------------
     		
     		if(up.contains(icon)){
     			mainOpen = false;
+    			System.out.println("FALSE");
     		}
     		
     	}
@@ -600,7 +571,7 @@ public class Tester extends BasicGame{
     	//--------------------------------------------------
     	//MAP MOVEMENT
     	//--------------------------------------------------
-    	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100 && canMove && !mainOpen && !inventoryOpen && !levelUp){
+    	if(input.isKeyDown(Input.KEY_UP) && player.getYPos() <= 100 && canMove && !mainOpen && !inventoryOpen && !levelUp && player.isAlive){
     		if(!map.collide(player.getXPos(), player.getYPos(),1) && map.getMapVertical(1)){
     			mapRenderY = mapRenderY + 0.3f;
     			map.moveObjects(0, 0.3f);
@@ -619,8 +590,10 @@ public class Tester extends BasicGame{
     		player.setFace(1);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175 && canMove && !mainOpen && !inventoryOpen && !levelUp){
+    	} else if(input.isKeyDown(Input.KEY_DOWN) && player.getYPos() >= screenSizeY - 175 && canMove && !mainOpen && !inventoryOpen && !levelUp && player.isAlive){
+    		System.out.println("MAP MOVE UP: " + map.getMapVertical(2));
     		if(!map.collide(player.getXPos(), player.getYPos(),2) && map.getMapVertical(2)){
+    			System.out.println();
     			mapRenderY = mapRenderY - 0.3f;
     			map.moveObjects(0, -0.3f);
     			mapMove = true;
@@ -638,7 +611,7 @@ public class Tester extends BasicGame{
     		player.setFace(2);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100 && canMove && !mainOpen && !inventoryOpen && !levelUp){
+    	} else if(input.isKeyDown(Input.KEY_LEFT) && player.getXPos() <= 100 && canMove && !mainOpen && !inventoryOpen && !levelUp && player.isAlive){
     		if(!map.collide(player.getXPos(), player.getYPos(),3) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX + 0.3f;
     			map.moveObjects(0.3f, 0);
@@ -657,7 +630,7 @@ public class Tester extends BasicGame{
     		player.setFace(3);
     		
     		
-    	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150 && canMove && !mainOpen && !inventoryOpen && !levelUp){
+    	} else if(input.isKeyDown(Input.KEY_RIGHT) && player.getXPos() >= screenSizeX - 150 && canMove && !mainOpen && !inventoryOpen && !levelUp && player.isAlive){
     		if(!map.collide(player.getXPos(), player.getYPos(),4) && map.getMapHorizontal()){
     			mapRenderX = mapRenderX - 0.3f;
     			map.moveObjects(-0.3f, 0);
@@ -679,7 +652,7 @@ public class Tester extends BasicGame{
     	}
     	
     	//PLAYER MOVEMENT
-    	if(input.isKeyDown(Input.KEY_UP) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp){
+    	if(input.isKeyDown(Input.KEY_UP) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp && player.isAlive){
     		buttonPressed = "ARROW UP";
     		buttonIsPressed = true;
     		walkUp = true;
@@ -691,7 +664,7 @@ public class Tester extends BasicGame{
     			player.setYPos(player.getYPos() - 0.3f);
     		}
     		player.setFace(1);
-    	} else if (input.isKeyDown(Input.KEY_DOWN) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp){
+    	} else if (input.isKeyDown(Input.KEY_DOWN) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp && player.isAlive){
     		buttonPressed = "ARROW DOWN";
     		buttonIsPressed = true;
     		walkDown = true;
@@ -703,7 +676,7 @@ public class Tester extends BasicGame{
     			player.setYPos(player.getYPos() + 0.3f);
     		}
     		player.setFace(2);
-    	} else if(input.isKeyDown(Input.KEY_LEFT) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp){
+    	} else if(input.isKeyDown(Input.KEY_LEFT) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp && player.isAlive){
     		buttonPressed = "ARROW LEFT";
     		buttonIsPressed = true;
     		walkLeft = true;
@@ -715,7 +688,7 @@ public class Tester extends BasicGame{
     			player.setXPos(player.getXPos() - 0.3f);
     		}
     		player.setFace(3);
-    	} else if(input.isKeyDown(Input.KEY_RIGHT) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp){
+    	} else if(input.isKeyDown(Input.KEY_RIGHT) && !mapMove && canMove && !mainOpen && !inventoryOpen && !levelUp && player.isAlive){
     		buttonPressed = "ARROW RIGHT";
     		buttonIsPressed = true;
     		walkRight = true;
@@ -738,7 +711,7 @@ public class Tester extends BasicGame{
 			canAttack = true;
 		}
     	
-    	if(input.isKeyPressed(Input.KEY_Z) && !mainOpen && !inventoryOpen && !levelUp && !xDown){
+    	if(input.isKeyPressed(Input.KEY_Z) && !mainOpen && !inventoryOpen && !levelUp && !xDown && !spelling && player.isAlive){
     		
     		if(map.collideObject(player.getXPos(), player.getYPos(), player.getFace()) != "" && !drawMessage){
     			drawMessage = true;
@@ -835,7 +808,7 @@ public class Tester extends BasicGame{
     	} 
     	
     	//HEALING
-    	if(!mainOpen && !inventoryOpen && !levelUp){
+    	if(!mainOpen && !inventoryOpen && !levelUp && player.isAlive){
 	    	if(xDown && input.isKeyPressed(Input.KEY_X)){
 	    		xDown = false;
 	    		canMove = true;
@@ -848,6 +821,35 @@ public class Tester extends BasicGame{
 	    		canAttack = false;
 	    	}
     	}
+    	
+    	//FIRE SPELL
+    	if(spelling){
+    		if(player.currentMana <= 0 || player.currentHP <= 0){
+    			player.currentMana = 0;
+    			spelling = false;
+    			canMove = true;
+    			canAttack = true;
+    			fireSpell.restart();
+    		}
+    		
+    		if(input.isKeyPressed(Input.KEY_C)){
+    			spelling = false;
+    			canMove = true;
+    			canAttack = true;
+    			fireSpell.restart();
+    		}
+    	}
+    	
+    	if(!mainOpen && !inventoryOpen && !levelUp && player.isAlive){
+    		if(input.isKeyPressed(Input.KEY_C) && player.currentMana > 0){
+    			spelling = true;
+    			canMove = false;
+    			canAttack = false;
+    		}
+    	}
+    	
+    	
+    	
     	
     	
     	
@@ -897,6 +899,7 @@ public class Tester extends BasicGame{
         		//MOVE ENEMIES
         		//------------------------------------------------
         		if(enemyList.get(i).getCurrentHP() <= 0 && !enemyList.get(i).isDead && !eThread.isSleeping){
+        			//Enemy HP < 0
         			eThread.setEnemy(enemyList.get(i));
         		}
         		
@@ -956,6 +959,10 @@ public class Tester extends BasicGame{
         	
         	if(allDead){
         		levelUp = true;
+        		spelling = false;
+        		canMove = true;
+    			canAttack = true;
+    			fireSpell.restart();
         	}
         	//------------------------------------------------
     	}
@@ -990,10 +997,6 @@ public class Tester extends BasicGame{
     			girlMoveUp.draw(this.iconMenuX, this.iconMenuY);
     		} else if(this.menuWalk && !this.menuUpDown){
     			girlMoveDown.draw(this.iconMenuX, this.iconMenuY);
-    		}
-    		
-    		if(miniMenu){
-    			g.drawString("LOAD", this.iconMenuX, this.iconMenuY - 20);
     		}
     		
     		if(quitMenu){
@@ -1076,14 +1079,13 @@ public class Tester extends BasicGame{
         	g.drawString(buttonPressed, 10, 25);
         	
         	
+        	//DRAW ENEMIES
         	for(int i = 0; i < enemyList.size(); i++){
             	if(!enemyList.get(i).isDead){
-            		enemyList.get(i).drawEnemy(g, false, enemyList.get(i).getAttacking());
+            		enemyList.get(i).drawEnemy(g, true, enemyList.get(i).getAttacking());
             		enemyList.get(i).drawRectangle(g);
             	}
             }
-        	
-        	
         	
         	if(zDown && walkDown && player.getCombo(2) == 0){
         		girlAttack1.draw(player.getXPos()-10, player.getYPos()-10);
@@ -1148,11 +1150,6 @@ public class Tester extends BasicGame{
         	}
         	
         	
-        	
-        	if(cDown && !zDown && !xDown){
-        		g.drawString("CAST SPELL", 10, 40);
-        	}
-        	
         	if(buttonIsPressed && walkUp && !zDown){
         		g.drawString("WALKING UP", 10, 40);
         		girlMoveUp.draw(player.getXPos(), player.getYPos());
@@ -1177,10 +1174,19 @@ public class Tester extends BasicGame{
         	}
         	
         	
-        	if(xDown && !zDown && !cDown){
-        		g.drawString("CAST TECH", 10, 40);
+        	//ANIMATE HEAL
+        	if(xDown && !zDown){
         		spell.animateSpell(0, g, player, enemyList);
         	}
+        	
+        	//ANIMATE FIRE SPELL
+        	if(spelling){
+        		spell.animateSpell(1, g, player, enemyList);
+        		fireSpell.draw();
+        	}
+        	
+        	
+        	//fireSpell.draw();
         	
         	mapFG.draw(map.getMPX(), map.getMPY());
         	
@@ -1266,22 +1272,54 @@ public class Tester extends BasicGame{
     	//----------------------------------------------
     }
     
-    public void initEnemies(){
+    //INITIALIZE ENEMIES
+    public void initEnemies(){    	
     	enemyList = new ArrayList<Enemy>();
     	enemyAList = new ArrayList<Enemy>();
-    	rabite = new Enemy(player.level);
-    	rabite.setXPos(180);
-    	rabite.setYPos(150);
-    	rabite2 = new Enemy(player.level);
-    	rabite2.setXPos(300);
-    	rabite2.setYPos(150);
-    	rabite3 = new Enemy(player.level);
-    	rabite2.setXPos(400);
-    	rabite2.setYPos(150);
-    	rabite3.setAggression(2);
-    	enemyList.add(rabite);
-    	enemyList.add(rabite2);
-    	enemyList.add(rabite3);
+    	randies = new ArrayList<Randomizer>();
+    	
+    	Random ranran = new Random();
+    	int ranranInt = 0;
+    	if(player.level <= 3){
+    		ranranInt = ranran.nextInt(1) + 1;
+    	} else if(player.level > 3 && player.level <= 5){
+    		ranranInt = ranran.nextInt(4);
+    	} else {
+    		ranranInt = ranran.nextInt(6);
+    	}
+    	
+    	for(int i = 0; i < ranranInt; i++){
+    		Enemy e = new Enemy(player.level);
+    		
+    		int ran = 0;
+    		if(player.level <= 3){
+    			ran = ranran.nextInt(3);
+    		} else {
+    			ran = ranran.nextInt(6);
+    		}
+    		
+    		e.setEnemy(ran);
+    		
+    		if(i < 3){
+    			e.setXPos(180 + i*100);
+    			e.setYPos(150);
+    		} else {
+    			e.setXPos(180 + (i-4)*100);
+    			e.setYPos(250);
+    		}
+    		
+    		int agro = ranran.nextInt(10);
+    		if(agro == 1){
+    			e.setAggression(2);
+    			Randomizer r = new Randomizer();
+    			r.start();
+    			randies.add(r);
+    		} else {
+    			e.setAggression(1);
+    		}
+    		
+    		enemyList.add(e);
+    	}
     	
     }
 

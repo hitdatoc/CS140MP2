@@ -380,14 +380,14 @@ public class Player {
 	public int attackDmg(){
 		Random random = new Random();
 		float randomInt = (float)(random.nextInt(10+(agi*2)) + 1);
-		//System.out.println("PDAMAGE: " + this.initDmg + " PFINAL DAMAGE: " + (int)(this.initDmg + (this.initDmg*(randomInt/100))) + " PRANDOM: " + randomInt);
+		System.out.println("PDAMAGE: " + this.initDmg + " PFINAL DAMAGE: " + (int)(this.initDmg + (this.initDmg*(randomInt/100))) + " PRANDOM: " + randomInt);
 		return (int)(this.initDmg + (this.initDmg*(randomInt/100)));
 	}
 	
 	public void receiveDmg(int damage){
 		Random random = new Random();
 		float randomInt = (float)(random.nextInt(10+str) + 1);
-		//System.out.println("DAMAGE: " + damage*(randomInt/100) + " FINAL DAMAGE: " + (int)(damage - (damage*(randomInt/100))) + " RANDOM: " + randomInt);
+		System.out.println("DAMAGE: " + damage*(randomInt/100) + " FINAL DAMAGE: " + (int)(damage - (damage*(randomInt/100))) + " RANDOM: " + randomInt);
 		this.currentHP = currentHP - (int)(damage - damage*(randomInt/100));
 		if(this.currentHP <= 0){
 			this.currentHP = 0;

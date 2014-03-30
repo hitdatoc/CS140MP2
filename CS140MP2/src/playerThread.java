@@ -2,7 +2,7 @@
 public class playerThread extends Thread{
 	
 	int[] sleeptime;
-	boolean isCasting;
+	volatile boolean isCasting;
 	
 	public playerThread(){
 		this.isCasting = false;
